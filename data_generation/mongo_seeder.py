@@ -7,6 +7,10 @@ def seed():
     client = MongoClient(os.getenv("CARECONNECT_MONGO_URI", "mongodb://localhost:27017/"))
     db = client[os.getenv("CARECONNECT_MONGO_DB", "careconnect")]
 
+    # Re-running the seeder replaces the data instead of appending to it.
+    for name in ("NursePings", "PatientReviews", "MedicalCatalogs"):
+        db[name].delete_many({})
+
     # 1. Seed 500,000 Geospatial Telemetry Pings
     print("Seeding NursePings (500,000 pings)...")
     pings = []
@@ -44,6 +48,27 @@ def seed():
             "created_at": datetime.now(timezone.utc)
         })
     db.PatientReviews.insert_many(reviews)
+
+    # 3. Seed MedicalCatalogs (specialty, availability, medication details; see docs/mongo_schema_map.json)
+    print("Seeding MedicalCatalogs...")
+    specialties = ["General Practice", "Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Psychiatry", "ENT"]
+    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    medications = [("Paracetamol", "500 mg", "oral"), ("Amoxicillin", "250 mg", "oral"), ("Ibuprofen", "400 mg", "oral"),
+                   ("Cetirizine", "10 mg", "oral"), ("Metformin", "500 mg", "oral"), ("Salbutamol", "100 mcg", "inhaled")]
+    catalogs = []
+    for specialty in specialties:
+        for _ in range(5):
+            med = random.choice(medications)
+            catalogs.append({
+                "specialty": specialty,
+                "availability_slots": [
+                    {"day": d, "start": f"{random.choice([8, 9, 10])}:00", "end": f"{random.choice([14, 16, 18])}:00"}
+                    for d in random.sample(days, k=random.randint(2, 4))
+                ],
+                "medication_details": {"name": med[0], "strength": med[1], "route": med[2]},
+                "created_at": datetime.now(timezone.utc)
+            })
+    db.MedicalCatalogs.insert_many(catalogs)
     print("MongoDB Data Generation Complete!")
 
 if __name__ == "__main__":

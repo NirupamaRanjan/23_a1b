@@ -6,7 +6,7 @@ CREATE TABLE patients (
 
 CREATE TABLE wallet_audit_logs (
     id SERIAL PRIMARY KEY,
-    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE RESTRICT,
     amount_changed DECIMAL(10,2) NOT NULL,
     action_type VARCHAR(20) NOT NULL CHECK (action_type IN ('DEBIT', 'CREDIT')),
     balance_after DECIMAL(10,2) NOT NULL,
@@ -23,9 +23,9 @@ CREATE TABLE clinics (
 
 CREATE TABLE appointments (
     id SERIAL PRIMARY KEY,
-    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    clinic_id INT NOT NULL REFERENCES clinics(id) ON DELETE CASCADE,
+    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE RESTRICT,
+    clinic_id INT NOT NULL REFERENCES clinics(id) ON DELETE RESTRICT,
     copay_amount DECIMAL(10,2) NOT NULL CHECK (copay_amount > 0.00),
-    status VARCHAR(50) NOT NULL CHECK (status IN ('WAITING', 'IN CONSULTATION', 'DISCHARGED')),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('WAITING', 'IN_CONSULTATION', 'DISCHARGED')),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );

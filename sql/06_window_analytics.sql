@@ -1,10 +1,13 @@
 -- Workflow 2: 7-day moving average of copay revenue per clinic with DENSE_RANK()
+-- Counts DISCHARGED appointments of the last 30 days; the window is 7 calendar days (RANGE), not 7 rows.
 WITH daily_revenue AS (
     SELECT 
         clinic_id,
         DATE(created_at) AS transaction_date,
         SUM(copay_amount) AS daily_total
     FROM appointments
+    WHERE status = 'DISCHARGED'
+      AND created_at >= CURRENT_DATE - INTERVAL '30 days'
     GROUP BY clinic_id, DATE(created_at)
 ),
 moving_averages AS (
@@ -15,7 +18,7 @@ moving_averages AS (
         AVG(daily_total) OVER (
             PARTITION BY clinic_id 
             ORDER BY transaction_date 
-            ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+            RANGE BETWEEN INTERVAL '6 days' PRECEDING AND CURRENT ROW
         ) AS moving_avg_7d
     FROM daily_revenue
 )

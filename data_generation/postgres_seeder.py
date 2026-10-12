@@ -16,7 +16,10 @@ def seed():
     cur = conn.cursor()
     
     print("Clearing old data...")
+    # wallet_audit_logs is append-only (see sql/03); switch its guard triggers off only for this reset.
+    cur.execute("ALTER TABLE wallet_audit_logs DISABLE TRIGGER USER;")
     cur.execute("TRUNCATE TABLE appointments, wallet_audit_logs, patients, clinics RESTART IDENTITY CASCADE;")
+    cur.execute("ALTER TABLE wallet_audit_logs ENABLE TRIGGER USER;")
     conn.commit()
 
     print("Seeding Patients...")
@@ -24,7 +27,9 @@ def seed():
     cur.executemany("INSERT INTO patients (name, hsa_balance) VALUES (%s, %s)", patients_data)
     
     print("Seeding Clinics...")
-    clinics_data = [(f"Clinic_{i}", 40.7 + random.random(), -73.9 + random.random(), True) for i in range(50)]
+    # Clinics are placed inside the area where mongo_seeder.py generates nurse pings
+    # (centre 40.748817, -73.985130 +/- 0.1 deg) so a 5 km nurse search always finds nurses.
+    clinics_data = [(f"Clinic_{i}", 40.70 + random.random() * 0.10, -74.03 + random.random() * 0.10, True) for i in range(50)]
     cur.executemany("INSERT INTO clinics (name, latitude, longitude, is_accepting_patients) VALUES (%s, %s, %s, %s)", clinics_data)
     conn.commit()
 
