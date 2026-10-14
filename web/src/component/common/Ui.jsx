@@ -85,7 +85,7 @@ export const State = ({
     children,
     compact = false,
 }) => {
-    if (resource.loading && !resource.data)
+    if (resource.loading)
         return (
             <Box aria-busy='true' role='status' sx={{ py: compact ? 1 : 3 }}>
                 <LinearProgress />
@@ -94,7 +94,7 @@ export const State = ({
                 </Typography>
             </Box>
         );
-    if (resource.error && !resource.data)
+    if (resource.error)
         return (
             <Alert
                 severity='error'
@@ -113,37 +113,7 @@ export const State = ({
                 <Typography color='text.secondary'>{emptyMessage}</Typography>
             </Box>
         );
-    return (
-        <Box
-            sx={{
-                minWidth: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: compact ? 0.5 : 1,
-                flex: compact ? '1 1 0' : undefined,
-                minHeight: compact ? 0 : undefined,
-            }}
-        >
-            {resource.loading && (
-                <Box aria-busy='true' role='status'>
-                    <LinearProgress />
-                </Box>
-            )}
-            {resource.error && (
-                <Alert
-                    severity='warning'
-                    action={
-                        <Button color='inherit' size='small' onClick={resource.retry}>
-                            Retry
-                        </Button>
-                    }
-                >
-                    {resource.error}
-                </Alert>
-            )}
-            {children}
-        </Box>
-    );
+    return children;
 };
 export const Pager = ({ data, page, setPage, disabled = false }) => {
     const pages = Math.max(1, Number(data?.pages) || 1);

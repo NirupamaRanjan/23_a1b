@@ -59,7 +59,7 @@ Response:
 
 The procedure currently returns no generated IDs. Capture the exact appointment/audit in the same locked transaction, or document an output-ID procedure adaptation. Do not select a random/latest audit after releasing the patient lock. Never synthesize a trigger row in application code. Return only after the transaction commits.
 
-`GET /me/audit?start_date=&end_date=&page=&page_size=` must derive the patient from the server session and return the paged envelope plus `current_balance`, `opening_balance` and `has_active_appointment`. Items are id, patient_id, amount_changed, action_type, balance_after, timestamp. Use inclusive UTC date bounds (end date implemented as < next day). Order oldest-first by timestamp,id; calculate the opening balance for the entire selected period, not just the page. `total` drives the Number of entries card. No audit edit/delete API is required.
+`GET /me/audit?start_date=&end_date=&page=&page_size=` must derive the patient from the server session and return the paged envelope plus `current_balance`, `opening_balance` and `has_active_appointment`. Items are id, patient_id, amount_changed, action_type, balance_after, timestamp. Use inclusive UTC date bounds (end date implemented as < next day). Order newest-first by timestamp DESC, id DESC; calculate the opening balance for the entire selected period, not just the page. `total` drives the Number of entries card. No audit edit/delete API is required.
 
 ## Analytics
 
@@ -77,7 +77,7 @@ To meet the accepted current-location semantics, select each nurse's latest ping
 ## Reviews and catalog
 
 - `GET /reviews/insights` -> `{total_reviews:500,avg_rating:4.2,rating_distribution:[{rating:5,count:250}],frequent_tags:[{tag:"Friendly",count:330}]}`. Adapt the assigned $facet output names (`overall_summary`, `rating_distribution`, `frequent_tags`) and `_id` keys to this transport shape. Global PatientReviews, with `bedside_manner_tags`, has no guaranteed clinic_id. Do not pretend the selected clinic scopes these charts. Return missing rating buckets as zero; top tags remain bounded by the pipeline's ten-tag limit.
-- `GET /catalogs?q=&page=&page_size=1` -> paged full MedicalCatalogs document, `id` equal to stringified Mongo _id, specialty, availability_slots, medication_details and arbitrary extra JSON-compatible fields. Serialise BSON dates/ObjectId safely and cap response size/depth. One document is fetched per page; search covers specialty. No catalog edit endpoint is needed.
+- `GET /catalogs?q=&page=&page_size=1` -> paged full MedicalCatalogs document, `id` equal to stringified Mongo _id, specialty, availability_slots, medication_details and arbitrary extra JSON-compatible fields. Serialise BSON dates/ObjectId safely and cap response size/depth. One document is fetched per page; `q` searches specialty text and `specialty` filters by exact specialty. `GET /catalogs/specialties` -> `{items:[{specialty,count}]}` for the specialty chips. No catalog edit endpoint is needed.
 
 ## Safe failures
 

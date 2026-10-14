@@ -349,7 +349,8 @@ const NurseMap = () => {
                                                 sx={{ justifyContent: 'space-between', gap: 1 }}
                                             >
                                                 <Typography sx={{ fontWeight: 600 }}>
-                                                    {index + 1}. Nurse {row.nurse_id}
+                                                    {index + 1}.{' '}
+                                                    {row.nurse_name || `Nurse ${row.nurse_id}`}
                                                 </Typography>
                                                 <Typography
                                                     color='primary.main'

@@ -49,8 +49,17 @@ class MongoService:
             'rating_distribution':[{'rating':rating,'count':buckets.get(rating,0)} for rating in range(1,6)],
             'frequent_tags':[{'tag':row['_id'],'count':row['count']} for row in facets['frequent_tags']]}
 
-    def catalogs(self, q, page, size):
+    def specialties(self):
+        rows = self.db.MedicalCatalogs.aggregate([
+            {'$match': {'specialty': {'$type': 'string'}}},
+            {'$group': {'_id': '$specialty', 'count': {'$sum': 1}}},
+            {'$sort': {'_id': 1}}], maxTimeMS=10000)
+        return {'items': [{'specialty': row['_id'], 'count': row['count']} for row in rows]}
+
+    def catalogs(self, q, page, size, specialty=''):
         query = {'specialty':{'$regex':re.escape(q),'$options':'i'}} if q else {}
+        if specialty:
+            query = {'specialty': specialty}  # exact match for the specialty chips
         total = self.db.MedicalCatalogs.count_documents(query,maxTimeMS=10000)
         rows = list(self.db.MedicalCatalogs.find(query).sort('_id',1).skip((page-1)*size).limit(size).max_time_ms(10000))
         items = []

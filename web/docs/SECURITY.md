@@ -35,4 +35,4 @@ These references guide the later controls; reading them does not establish that 
 - Positive decimal validation, disabled duplicate-submit controls and retained retry key/original clinic details after uncertain responses. Server locking, idempotency and balance/index checks are still necessary.
 - No database connection strings or runtime fixture data in frontend source.
 
-The paired FastAPI server implements sessions, Origin/CSRF verification, patient/clinic permissions, parameterized SQL, escaped Mongo search, persisted idempotency, concurrency checks and response limits. Nginx supplies deployment headers. Production identity integration is outside the local demo assignment. See api/docs/verification.md for tested cases.
+The paired FastAPI server implements sessions, Origin/CSRF verification, patient/clinic permissions, parameterized SQL, escaped Mongo search, persisted idempotency, concurrency checks and response limits. Nginx supplies deployment headers. Production identity integration is outside the local demo assignment. See docs/verification.md for tested cases.

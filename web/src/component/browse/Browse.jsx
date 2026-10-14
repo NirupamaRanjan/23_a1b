@@ -36,6 +36,9 @@ const Browse = () => {
     const [error, setError] = useState('');
     const alive = useRef(true);
     const q = useDebounce(search);
+    // A patient's Patients tab only ever contains their own record, so it has no search box.
+    const showSearch = !(entity === 'patients' && session?.actor?.role === 'patient');
+    const showControls = showSearch || entity !== 'patients';
     const navigate = useNavigate();
     const browse = useRef((params, options) =>
         API.browse(params.entity, params.query, options)
@@ -46,7 +49,7 @@ const Browse = () => {
     const records = useApi(browse, {
         entity,
         query: {
-            q,
+            q: showSearch ? q : '',
             page,
             page_size: 5,
             ...(entity === 'clinics' && filter !== '' ? { accepting: filter } : {}),
@@ -138,103 +141,48 @@ const Browse = () => {
                     }}
                 >
                     <Box sx={{ minWidth: 0 }}>
-                        <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, mb: 3 }}>
-                            <TextField
-                                fullWidth
-                                label={`Search ${entity} by name or ID`}
-                                value={search}
-                                onChange={(event) => {
-                                    setSearch(event.target.value);
-                                    setPage(1);
-                                    setSelectedId(null);
-                                }}
-                                slotProps={{ htmlInput: { maxLength: 120 } }}
-                            />
-                            {entity !== 'patients' && (
-                                <TextField
-                                    select
-                                    label='Filter'
-                                    value={filter}
-                                    onChange={(event) => {
-                                        setFilter(event.target.value);
-                                        setPage(1);
-                                        setSelectedId(null);
-                                    }}
-                                    sx={{ minWidth: 185 }}
-                                >
-                                    {options.map(([value, label]) => (
-                                        <MenuItem value={value} key={value}>
-                                            {label}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            )}
-                        </Stack>
+                        {showControls && (
+                            <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, mb: 3 }}>
+                                {showSearch && (
+                                    <TextField
+                                        fullWidth
+                                        label={`Search ${entity} by name or ID`}
+                                        value={search}
+                                        onChange={(event) => {
+                                            setSearch(event.target.value);
+                                            setPage(1);
+                                            setSelectedId(null);
+                                        }}
+                                        slotProps={{ htmlInput: { maxLength: 120 } }}
+                                    />
+                                )}
+                                {entity !== 'patients' && (
+                                    <TextField
+                                        select
+                                        label='Filter'
+                                        value={filter}
+                                        onChange={(event) => {
+                                            setFilter(event.target.value);
+                                            setPage(1);
+                                            setSelectedId(null);
+                                        }}
+                                        sx={{ minWidth: 185 }}
+                                    >
+                                        {options.map(([value, label]) => (
+                                            <MenuItem value={value} key={value}>
+                                                {label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                )}
+                            </Stack>
+                        )}
                         <State
                             resource={records}
                             empty={records.data?.items.length === 0}
                             emptyMessage='No records match your search.'
                         >
-                            <Stack
-                                sx={{ display: { xs: 'flex', sm: 'none' }, gap: 1.5 }}
-                                aria-label={`${entity} records`}
-                            >
-                                {records.data?.items.map((item) => (
-                                    <Panel
-                                        key={item.id}
-                                        sx={(theme) => ({
-                                            p: 1.5,
-                                            ...(selectedId === item.id && {
-                                                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                            }),
-                                        })}
-                                    >
-                                        <Button
-                                            onClick={() => {
-                                                setSelectedId(item.id);
-                                                setError('');
-                                            }}
-                                            aria-label={`View details: ${item.name || item.patient_name}`}
-                                            sx={{
-                                                color: 'text.primary',
-                                                justifyContent: 'flex-start',
-                                                textAlign: 'left',
-                                                px: 0,
-                                                width: '100%',
-                                            }}
-                                        >
-                                            {item.name || item.patient_name}
-                                        </Button>
-                                        <Typography variant='body2' color='text.secondary'>
-                                            ID {item.id}
-                                            {entity === 'appointments' ? ` · ${item.clinic_name}` : ''}
-                                        </Typography>
-                                        {entity === 'patients' ? (
-                                            <Typography sx={{ mt: 0.5, fontWeight: 600 }}>
-                                                {money(item.hsa_balance)}
-                                            </Typography>
-                                        ) : entity === 'clinics' ? (
-                                            <Typography
-                                                sx={{ mt: 0.5 }}
-                                                color={
-                                                    item.is_accepting_patients
-                                                        ? 'primary.main'
-                                                        : 'text.secondary'
-                                                }
-                                            >
-                                                {item.is_accepting_patients
-                                                    ? 'Accepting'
-                                                    : 'Not accepting'}
-                                            </Typography>
-                                        ) : (
-                                            <Box sx={{ mt: 0.5 }}>
-                                                <Status value={item.status} />
-                                            </Box>
-                                        )}
-                                    </Panel>
-                                ))}
-                            </Stack>
-                            <Box sx={{ display: { xs: 'none', sm: 'block' }, overflowX: 'auto' }}>
+                            <Box sx={{ overflowX: 'auto' }}>
                                 <Table aria-label={`${entity} records`}>
                                     <TableHead>
                                         <TableRow>
@@ -376,21 +324,14 @@ const Browse = () => {
                                                     value={record?.longitude}
                                                 />
                                             </Stack>
-                                            {session.actor.role === 'patient' ? (
-                                                <Button
-                                                    variant='contained'
-                                                    disabled={!record?.is_accepting_patients}
-                                                    endIcon={<ArrowForwardIcon />}
-                                                    onClick={bookHere}
-                                                >
-                                                    Book at this clinic
-                                                </Button>
-                                            ) : (
-                                                <Typography color='text.secondary'>
-                                                    Switch to a patient session to book at this
-                                                    clinic.
-                                                </Typography>
-                                            )}
+                                            <Button
+                                                variant='contained'
+                                                disabled={!record?.is_accepting_patients}
+                                                endIcon={<ArrowForwardIcon />}
+                                                onClick={bookHere}
+                                            >
+                                                Book at this clinic
+                                            </Button>
                                         </>
                                     ) : entity === 'patients' ? (
                                         <>

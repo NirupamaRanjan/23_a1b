@@ -240,12 +240,20 @@ export const setupApi = async (page) => {
                     { tag: 'Punctual', count: 160 },
                 ],
             });
+        if (path === '/catalogs/specialties')
+            return send({
+                items: [
+                    { specialty: 'Cardiology', count: 5 },
+                    { specialty: 'General Practice', count: 5 },
+                ],
+            });
         if (path === '/catalogs')
             return send({
                 ...result([
                     {
                         id: '68ead5108b523b67289a0041',
                         specialty: 'General Practice',
+                        physician: 'Dr. Dana Hayes',
                         availability_slots: [
                             { day: 'Mon', start: '09:00', end: '16:00' },
                             { day: 'Thu', start: '10:00', end: '18:00' },

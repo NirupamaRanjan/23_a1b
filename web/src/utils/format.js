@@ -31,10 +31,5 @@ export const dateTime = (value) => {
         : '—';
 };
 export const todayUTC = () => new Date().toISOString().slice(0, 10);
-export const daysAgoUTC = (days) => {
-    const date = new Date();
-    date.setUTCDate(date.getUTCDate() - Number(days));
-    return date.toISOString().slice(0, 10);
-};
 export const number = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
 export const shortId = (value) => String(value || '—');

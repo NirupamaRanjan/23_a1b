@@ -176,3 +176,41 @@ test('A new nurse ping appears after polling without navigation', async ({ page 
     await expect(page.getByText('1. Nurse 117')).toBeVisible({ timeout: 16000 });
     await expect(page).toHaveURL(/\/map$/);
 });
+test('Map lists a seeded nurse by name when the ping carries one', async ({ page }) => {
+    const state = await setupApi(page);
+    state.nurseRows = [
+        {
+            nurse_id: 42,
+            nurse_name: 'Brian Osborne',
+            is_active: true,
+            location: { type: 'Point', coordinates: [-73.98513, 40.748817] },
+            created_at: '2026-10-12T22:40:30Z',
+            dist: { calculated: 150 },
+        },
+    ];
+    await page.goto('/map');
+    await expect(page.getByText('1. Brian Osborne')).toBeVisible();
+});
+test('Analytics explains that only clinic staff can refresh the summary', async ({ page }) => {
+    await setupApi(page);
+    await page.goto('/analytics');
+    await expect(page.getByRole('button', { name: 'Refresh summary' })).toBeDisabled();
+    await expect(page.getByText('Switch to clinic staff in the header to refresh.')).toBeVisible();
+});
+test('A patient sees only their own record in Browse, without a search box', async ({ page }) => {
+    await setupApi(page);
+    await page.goto('/browse');
+    await expect(page.getByLabel('Search clinics by name or ID')).toBeVisible();
+    await page.getByRole('tab', { name: 'Patients' }).click();
+    await expect(page.getByLabel('Search patients by name or ID')).toHaveCount(0);
+});
+test('The ranking date picker sits inside the Clinic ranking section', async ({ page }) => {
+    await setupApi(page);
+    await page.goto('/analytics');
+    const title = await page.getByText('Clinic ranking', { exact: true }).boundingBox();
+    const picker = await page.getByLabel('Ranking date (UTC)').boundingBox();
+    const table = await page.getByRole('table', { name: 'Clinic ranking' }).boundingBox();
+    expect(picker.y).toBeGreaterThan(title.y);
+    expect(picker.y).toBeLessThan(table.y);
+    await expect(page.getByText('Ranking date', { exact: true })).toHaveCount(0);
+});

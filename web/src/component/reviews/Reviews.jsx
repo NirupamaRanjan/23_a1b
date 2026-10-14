@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import {
     Box,
     Button,
+    Chip,
+    Rating,
     Stack,
     Tab,
     Table,
@@ -10,7 +12,6 @@ import {
     TableHead,
     TableRow,
     Tabs,
-    TextField,
     Typography,
     alpha,
     styled,
@@ -19,7 +20,6 @@ import {
 } from '@mui/material';
 import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
-import useDebounce from '../../hooks/useDebounce';
 import { number } from '../../utils/format';
 import { Panel, State } from '../common/Ui';
 const Layout = styled(Box)(({ theme }) => ({
@@ -37,7 +37,14 @@ const ScrollArea = styled(Box)({
     overscrollBehavior: 'contain',
     overflowWrap: 'anywhere',
 });
-export const DocumentValue = ({ value, depth = 0, columns = 2 }) => {
+// Readable field names: known catalog fields get friendly labels, others are capitalised.
+const FIELD_LABELS = { name: 'Medicine', strength: 'Strength', route: 'Route' };
+const fieldLabel = (key, labels) => {
+    if (labels && labels[key]) return labels[key];
+    const text = String(key).replaceAll('_', ' ');
+    return text.charAt(0).toUpperCase() + text.slice(1);
+};
+export const DocumentValue = ({ value, depth = 0, columns = 2, labels }) => {
     if (depth > 12)
         return (
             <Typography variant='body2' color='text.secondary'>
@@ -77,7 +84,7 @@ export const DocumentValue = ({ value, depth = 0, columns = 2 }) => {
                 {Object.entries(value).map(([key, item]) => (
                     <Box key={key} sx={{ minWidth: 0 }}>
                         <Typography variant='body2' color='text.secondary' sx={{ fontWeight: 600 }}>
-                            {key.replaceAll('_', ' ')}
+                            {fieldLabel(key, labels)}
                         </Typography>
                         <DocumentValue value={item} depth={depth + 1} />
                     </Box>
@@ -90,8 +97,9 @@ export const DocumentValue = ({ value, depth = 0, columns = 2 }) => {
         </Typography>
     );
 };
-const BarChart = ({ title, rows, labelKey }) => {
+const BarChart = ({ title, rows, labelKey, total }) => {
     const maximum = Math.max(1, ...rows.map((row) => number(row.count)));
+    const share = (count) => (total ? Math.round((number(count) / total) * 100) : 0);
     return (
         <Panel sx={{ p: 1.5, minHeight: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
             <Typography sx={{ mb: 0.75, flexShrink: 0, fontWeight: 600 }}>{title}</Typography>
@@ -111,7 +119,9 @@ const BarChart = ({ title, rows, labelKey }) => {
                                     overflowWrap: 'anywhere',
                                 }}
                             >
-                                {labelKey === 'rating' ? `${row.rating} stars` : row.tag}
+                                {labelKey === 'rating'
+                                    ? `${row.rating} ${number(row.rating) === 1 ? 'star' : 'stars'}`
+                                    : row.tag}
                             </Typography>
                             <Box
                                 sx={(theme) => ({
@@ -132,9 +142,24 @@ const BarChart = ({ title, rows, labelKey }) => {
                             </Box>
                             <Typography
                                 variant='body2'
-                                sx={{ width: 40, textAlign: 'right', fontWeight: 600 }}
+                                sx={{
+                                    width: total ? 84 : 40,
+                                    textAlign: 'right',
+                                    fontWeight: 600,
+                                    whiteSpace: 'nowrap',
+                                }}
                             >
                                 {number(row.count)}
+                                {total ? (
+                                    <Typography
+                                        component='span'
+                                        variant='body2'
+                                        color='text.secondary'
+                                    >
+                                        {' '}
+                                        · {share(row.count)}%
+                                    </Typography>
+                                ) : null}
                             </Typography>
                         </Stack>
                     ))}
@@ -157,15 +182,28 @@ export const CatalogDocument = ({ record }) => {
     const extras = Object.fromEntries(
         Object.entries(record).filter(
             ([key]) =>
-                !['id', '_id', 'specialty', 'availability_slots', 'medication_details'].includes(
-                    key
-                )
+                ![
+                    'id',
+                    '_id',
+                    'specialty',
+                    'physician',
+                    'availability_slots',
+                    'medication_details',
+                ].includes(key)
         )
     );
+    // The database id is reference information, so it sits with the other extra fields.
+    if (record.id) extras.catalog_id = record.id;
     return (
         <>
-            <Typography variant='body2' color='text.secondary' sx={{ mb: 0.2, fontSize: 12 }}>
-                Document ID: {record.id}
+            <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
+                {record.specialty || 'Unspecified specialty'}
+                {record.physician && (
+                    <Typography component='span' color='text.secondary' sx={{ fontWeight: 400 }}>
+                        {' '}
+                        · {String(record.physician)}
+                    </Typography>
+                )}
             </Typography>
             <Box
                 sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
@@ -174,7 +212,11 @@ export const CatalogDocument = ({ record }) => {
                     <Typography variant='body2' sx={{ fontWeight: 600, mb: 0.5 }}>
                         Medication details
                     </Typography>
-                    <DocumentValue value={record.medication_details} columns={3} />
+                    <DocumentValue
+                        value={record.medication_details}
+                        columns={3}
+                        labels={FIELD_LABELS}
+                    />
                 </Box>
                 <Box>
                     <Typography variant='body2' sx={{ fontWeight: 600 }}>
@@ -230,16 +272,21 @@ const Reviews = () => {
     const short = useMediaQuery('(max-height: 740px)');
     const compact = phone || short;
     const [section, setSection] = useState('overview');
-    const [query, setQuery] = useState('');
+    const [specialty, setSpecialty] = useState('');
     const [page, setPage] = useState(1);
-    const q = useDebounce(query);
     const reviews = useApi(API.reviews);
-    const catalogs = useApi(API.catalogs, { q, page, page_size: 1 });
+    const specialties = useApi(API.specialties);
+    const catalogs = useApi(API.catalogs, { specialty, page, page_size: 1 });
     const record = catalogs.data?.items?.[0];
     const data = reviews.data;
+    const total = number(data?.total_reviews);
+    const positive = (data?.rating_distribution || [])
+        .filter((row) => number(row.rating) >= 4)
+        .reduce((sum, row) => sum + number(row.count), 0);
+    const positiveShare = total ? Math.round((positive / total) * 100) : 0;
     useEffect(() => {
         setPage(1);
-    }, [q]);
+    }, [specialty]);
     const summary = (
         <Panel
             sx={(theme) => ({
@@ -262,63 +309,83 @@ const Reviews = () => {
                         <Typography variant='body2' color='primary.main' sx={{ fontWeight: 600 }}>
                             Overall average rating
                         </Typography>
+                        <Stack direction='row' sx={{ alignItems: 'center', gap: 1 }}>
+                            <Typography sx={{ fontSize: 26, lineHeight: 1.2, fontWeight: 700 }}>
+                                {number(data?.avg_rating).toFixed(2)}
+                                <Typography
+                                    component='span'
+                                    color='text.secondary'
+                                    sx={{ ml: 1, fontSize: 14 }}
+                                >
+                                    / 5
+                                </Typography>
+                            </Typography>
+                            <Rating
+                                value={number(data?.avg_rating)}
+                                precision={0.1}
+                                readOnly
+                                size='small'
+                                aria-label={`Average ${number(data?.avg_rating).toFixed(2)} out of 5 stars`}
+                                sx={{ color: 'primary.main' }}
+                            />
+                        </Stack>
+                    </Box>
+                    <Box>
+                        <Typography variant='body2' color='text.secondary'>
+                            Satisfied patients
+                        </Typography>
                         <Typography sx={{ fontSize: 26, lineHeight: 1.2, fontWeight: 700 }}>
-                            {number(data?.avg_rating).toFixed(2)}
+                            {positiveShare}%
                             <Typography
                                 component='span'
                                 color='text.secondary'
                                 sx={{ ml: 1, fontSize: 14 }}
                             >
-                                / 5
+                                rated 4–5 stars
                             </Typography>
                         </Typography>
                     </Box>
                     <Box>
                         <Typography variant='body2' color='text.secondary'>
-                            Review count
+                            Reviews
                         </Typography>
-                        <Typography sx={{ fontSize: 26, lineHeight: 1.2, fontWeight: 700 }}>
-                            {data?.total_reviews ?? '—'}
+                        <Typography sx={{ fontWeight: 600 }}>
+                            Based on {total.toLocaleString()} reviews from all clinics
                         </Typography>
-                    </Box>
-                    <Box>
-                        <Typography variant='body2' color='text.secondary'>
-                            Scope
-                        </Typography>
-                        <Typography sx={{ fontWeight: 600 }}>All PatientReviews</Typography>
                     </Box>
                 </Stack>
             </State>
         </Panel>
     );
     const charts = (
-        <State
-            resource={reviews}
-            compact
-            empty={data?.total_reviews === 0}
-            emptyMessage='Charts will appear when reviews exist.'
+        <Box
+            sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                gap: 1.5,
+                minHeight: 0,
+                flex: compact ? '1 1 0' : '0 0 166px',
+            }}
         >
-            <Box
-                sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                    gap: 1.5,
-                    minHeight: 0,
-                    flex: compact ? '1 1 0' : '0 0 166px',
-                }}
+            <State
+                resource={reviews}
+                compact
+                empty={data?.total_reviews === 0}
+                emptyMessage='Charts will appear when reviews exist.'
             >
                 <BarChart
                     title='Rating distribution'
                     rows={data?.rating_distribution || []}
                     labelKey='rating'
+                    total={total}
                 />
                 <BarChart
                     title='Top bedside-manner tags'
                     rows={data?.frequent_tags || []}
                     labelKey='tag'
                 />
-            </Box>
-        </State>
+            </State>
+        </Box>
     );
     const catalog = (
         <Panel
@@ -332,33 +399,47 @@ const Reviews = () => {
             }}
         >
             <Stack
-                direction='row'
+                direction={{ xs: 'column', md: 'row' }}
                 sx={{
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 1,
+                    alignItems: { xs: 'stretch', md: 'center' },
+                    gap: { xs: 0.75, md: 2 },
                     flexShrink: 0,
                 }}
             >
-                <Typography sx={{ fontWeight: 600 }}>Medical catalog</Typography>
-                <Typography variant='body2' color='text.secondary' sx={{ fontSize: 12 }}>
+                <Typography sx={{ fontWeight: 600, flexShrink: 0 }}>Medical catalog</Typography>
+                {/* Specialty chips share the title row on wide screens to leave room for the entry. */}
+                <Stack
+                    direction='row'
+                    role='group'
+                    aria-label='Filter catalog by specialty'
+                    sx={{ gap: 0.75, flex: 1, minWidth: 0, overflowX: 'auto', pb: 0.25 }}
+                >
+                    {[
+                        { specialty: '', label: 'All' },
+                        ...(specialties.data?.items || []).map((row) => ({
+                            specialty: row.specialty,
+                            label: row.specialty,
+                        })),
+                    ].map((chip) => (
+                        <Chip
+                            key={chip.specialty || 'all'}
+                            label={chip.label}
+                            size='small'
+                            color='primary'
+                            variant={specialty === chip.specialty ? 'filled' : 'outlined'}
+                            aria-pressed={specialty === chip.specialty}
+                            onClick={() => setSpecialty(chip.specialty)}
+                            sx={{ flexShrink: 0 }}
+                        />
+                    ))}
+                </Stack>
+                <Typography
+                    variant='body2'
+                    color='text.secondary'
+                    sx={{ fontSize: 12, flexShrink: 0, display: { xs: 'none', md: 'block' } }}
+                >
                     Read-only reference
                 </Typography>
-            </Stack>
-            <Stack direction='row' sx={{ gap: 1.5, flexShrink: 0 }}>
-                <TextField
-                    label='Search specialty'
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                    slotProps={{ htmlInput: { maxLength: 120 } }}
-                    sx={{ flex: 1, minWidth: 0 }}
-                />
-                <TextField
-                    label='Document'
-                    value={record?.specialty || 'No document'}
-                    slotProps={{ input: { readOnly: true } }}
-                    sx={{ flex: 1, minWidth: 0 }}
-                />
             </Stack>
             <ScrollArea
                 sx={{ flex: 1, pr: 0.5 }}
@@ -370,14 +451,14 @@ const Reviews = () => {
                     resource={catalogs}
                     compact
                     empty={catalogs.data?.items.length === 0}
-                    emptyMessage='No catalog documents match your search.'
+                    emptyMessage='No catalog entries for this specialty.'
                 >
                     {record && <CatalogDocument record={record} />}
                 </State>
             </ScrollArea>
             <Stack direction='row' sx={{ alignItems: 'center', gap: 1, flexShrink: 0 }}>
                 <Typography variant='body2' color='text.secondary' sx={{ flex: 1, fontSize: 12 }}>
-                    Document {catalogs.data?.total ? page : 0} of {catalogs.data?.total ?? 0}
+                    Catalog entry {catalogs.data?.total ? page : 0} of {catalogs.data?.total ?? 0}
                 </Typography>
                 <Button
                     size='small'

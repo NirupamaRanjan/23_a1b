@@ -18,7 +18,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { useSession } from '../../context/DataProvider';
 import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
-import { dateTime, daysAgoUTC, money, number, todayUTC } from '../../utils/format';
+import { dateTime, money, number, todayUTC } from '../../utils/format';
 import { Heading, Pager, Panel, State, Title } from '../common/Ui';
 const RevenueChart = ({ rows }) => {
     const theme = useTheme();
@@ -130,33 +130,28 @@ const Analytics = () => {
     const [from, setFrom] = useState('');
     const [to, setTo] = useState('');
     const [month, setMonth] = useState(todayUTC().slice(0, 7));
-    const [rankDate, setRankDate] = useState(todayUTC());
+    const today = todayUTC();
+    // Workflow 2 covers the last 30 days (UTC), so the date pickers stay inside that window.
+    const windowStart = new Date(Date.parse(today) - 30 * 86400000).toISOString().slice(0, 10);
+    const [rankDate, setRankDate] = useState(today);
     const [page, setPage] = useState(1);
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState('');
     const [retained, setRetained] = useState(null);
     const clinic = selectedClinic?.id;
-    const minDate = daysAgoUTC(30);
-    const maxDate = todayUTC();
     const context = useRef('');
     context.current = `${clinic}:${month}`;
     useEffect(() => {
         setRetained(null);
         setError('');
     }, [clinic, month]);
-    const inWindow = (value) => !value || (value >= minDate && value <= maxDate);
-    const datesValid = (!from || !to || from <= to) && inWindow(from) && inWindow(to);
-    const rankDateValid = inWindow(rankDate);
+    const datesValid = !from || !to || from <= to;
     const series = useApi(
         API.revenue,
         { clinic_id: clinic, start_date: from, end_date: to },
         !!clinic && datesValid
     );
-    const ranking = useApi(
-        API.ranking,
-        { date: rankDate, page, page_size: 5 },
-        !!rankDate && rankDateValid
-    );
+    const ranking = useApi(API.ranking, { date: rankDate, page, page_size: 5 }, !!rankDate);
     const monthly = useApi(
         API.monthly,
         { clinic_id: clinic, month: month + '-01' },
@@ -217,7 +212,7 @@ const Analytics = () => {
                             gridTemplateColumns: {
                                 xs: '1fr',
                                 sm: 'repeat(2,1fr)',
-                                lg: 'repeat(4,1fr)',
+                                lg: 'repeat(3,1fr)',
                             },
                             gap: 2,
                             mb: 3,
@@ -245,23 +240,6 @@ const Analytics = () => {
                                 </Typography>
                             </State>
                         </Panel>
-                        <Panel>
-                            <Typography color='text.secondary'>Ranking date</Typography>
-                            <TextField
-                                type='date'
-                                label='Date (UTC)'
-                                value={rankDate}
-                                onChange={(event) => {
-                                    setRankDate(event.target.value);
-                                    setPage(1);
-                                }}
-                                slotProps={{
-                                    inputLabel: { shrink: true },
-                                    htmlInput: { min: minDate, max: maxDate },
-                                }}
-                                sx={{ mt: 2 }}
-                            />
-                        </Panel>
                         <Panel
                             sx={(theme) => ({
                                 bgcolor: alpha(theme.palette.primary.main, 0.1),
@@ -279,6 +257,11 @@ const Analytics = () => {
                             >
                                 {busy ? 'Refreshing…' : 'Refresh summary'}
                             </Button>
+                            {session.actor.role !== 'staff' && (
+                                <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
+                                    Switch to clinic staff in the header to refresh.
+                                </Typography>
+                            )}
                         </Panel>
                     </Box>
                     {error && (
@@ -294,20 +277,25 @@ const Analytics = () => {
                                 label='From (UTC)'
                                 value={from}
                                 onChange={(event) => setFrom(event.target.value)}
-                                slotProps={{ inputLabel: { shrink: true } }}
+                                slotProps={{
+                                    inputLabel: { shrink: true },
+                                    htmlInput: { min: windowStart, max: today },
+                                }}
                             />
                             <TextField
                                 type='date'
                                 label='To (UTC)'
                                 value={to}
                                 onChange={(event) => setTo(event.target.value)}
-                                slotProps={{ inputLabel: { shrink: true } }}
+                                slotProps={{
+                                    inputLabel: { shrink: true },
+                                    htmlInput: { min: windowStart, max: today },
+                                }}
                             />
                         </Stack>
                         {!datesValid ? (
                             <Alert severity='warning'>
-                                Choose From/To dates in the last 30 UTC days, with From not after
-                                To. The moving-average query only includes that window.
+                                The From date must not be after the To date.
                             </Alert>
                         ) : (
                             <State
@@ -330,13 +318,28 @@ const Analytics = () => {
             )}
             <Panel>
                 <Title>Clinic ranking</Title>
+                <Stack direction={{ xs: 'column', sm: 'row' }} sx={{ gap: 2, mb: 2 }}>
+                    <TextField
+                        type='date'
+                        label='Ranking date (UTC)'
+                        value={rankDate}
+                        onChange={(event) => {
+                            setRankDate(event.target.value);
+                            setPage(1);
+                        }}
+                        slotProps={{
+                            inputLabel: { shrink: true },
+                            htmlInput: { min: windowStart, max: today },
+                        }}
+                    />
+                </Stack>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
                     {rankDate} · ranked by seven-day average; equal values share a rank.
                 </Typography>
                 <State
                     resource={ranking}
                     empty={ranking.data?.items.length === 0}
-                    emptyMessage='No clinic ranks for this date.'
+                    emptyMessage='No discharged revenue on this date, so no clinics are ranked.'
                 >
                     <Box sx={{ overflowX: 'auto' }}>
                         <Table aria-label='Clinic ranking'>

@@ -6,9 +6,11 @@ import psycopg2
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0,str(ROOT))
-load_dotenv(ROOT/'.env')
+ROOT = Path(__file__).resolve().parent.parent      # api/
+REPO = ROOT.parent                                  # repo root: sql/, mongo/, data_generation/
+sys.path.insert(0,str(ROOT))                        # lets "from app..." work
+sys.path.insert(0,str(REPO))                        # lets "from data_generation..." work
+load_dotenv(REPO/'.env')                            # the shared root .env
 
 def bootstrap():
     from app.config import Settings
@@ -18,9 +20,9 @@ def bootstrap():
             cur.execute("SELECT to_regclass('patients')")
             fresh = cur.fetchone()[0] is None
             if fresh:
-                for path in sorted((ROOT/'sql').glob('0[1-5]_*.sql')):
+                for path in sorted((REPO/'sql').glob('0[1-5]_*.sql')):
                     cur.execute(path.read_text())
-            cur.execute((ROOT/'sql/07_api_support.sql').read_text())
+            cur.execute((REPO/'sql/07_api_support.sql').read_text())
             cur.execute('SELECT COUNT(*) FROM patients')
             seed_postgres = cur.fetchone()[0]==0
     # Original seeders remain available. Auto seeding never resets an existing store.

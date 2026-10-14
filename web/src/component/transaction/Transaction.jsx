@@ -35,7 +35,6 @@ const Transaction = () => {
     const balance = result?.balance_after ?? wallet.data?.current_balance;
     const insufficient = cents !== null && centsOf(balance) !== null && cents > centsOf(balance);
     const active = wallet.data?.has_active_appointment;
-    const canBook = session.actor.role === 'patient';
     useEffect(() => {
         alive.current = true;
         return () => {
@@ -45,16 +44,18 @@ const Transaction = () => {
     const submit = async (event) => {
         event.preventDefault();
         if (locked.current) return;
-        if (
-            !canBook ||
-            !displayClinic ||
-            !displayClinic.is_accepting_patients ||
-            cents === null ||
-            !session.patient
-        ) {
-            setError(
-                'Choose an accepting clinic and enter a positive copay with no more than two decimal places.'
-            );
+        // Report the specific problem rather than one combined message.
+        const problem = !session.patient
+            ? 'Only patients can book. Switch to a patient in the header first.'
+            : !displayClinic
+              ? 'Choose a clinic in Browse or in the header before booking.'
+              : !displayClinic.is_accepting_patients
+                ? 'This clinic is not accepting patients. Choose another clinic in Browse.'
+                : cents === null
+                  ? 'Enter a positive copay with no more than two decimal places.'
+                  : '';
+        if (problem) {
+            setError(problem);
             return;
         }
         if (insufficient) {
@@ -91,7 +92,6 @@ const Transaction = () => {
     const disabled =
         busy ||
         !!result ||
-        !canBook ||
         !session.patient ||
         !displayClinic?.is_accepting_patients ||
         !!active ||
@@ -114,12 +114,6 @@ const Transaction = () => {
                 <Panel component='form' onSubmit={submit}>
                     <Title>Booking details</Title>
                     <Stack sx={{ gap: 3 }}>
-                        {!canBook && (
-                            <Alert severity='info'>
-                                Only a patient session can book. Switch to a patient in the header,
-                                then enter a copay.
-                            </Alert>
-                        )}
                         <TextField
                             label='Patient'
                             value={session.patient?.name || 'No patient in this session'}

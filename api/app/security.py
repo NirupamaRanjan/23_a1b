@@ -70,4 +70,4 @@ class SessionService:
     @staticmethod
     def staff(session):
         if session['role'] != 'staff':
-            raise PublicError('FORBIDDEN', 403)
+            raise PublicError('STAFF_ONLY', 403)

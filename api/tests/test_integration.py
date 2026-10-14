@@ -48,7 +48,7 @@ def test_invalid_money(client,amount):
 def test_failure_cases_do_not_debit(client):
     assert book(client,amount='1001.00').json()['code']=='INSUFFICIENT_HSA_BALANCE'
     assert book(client,clinic=3).json()['code']=='CLINIC_NOT_ACCEPTING'
-    assert book(client,clinic=99999).json()['code']=='NOT_FOUND'
+    assert book(client,clinic=99999).json()['code']=='CLINIC_NOT_FOUND'
     assert client.get('/api/v1/session').json()['patient']['hsa_balance']=='1000.00'
     assert client.get('/api/v1/me/audit').json()['total']==0
 
@@ -59,7 +59,7 @@ def test_status_authorization_compare_and_set_and_second_booking(client):
     body={'status':'IN_CONSULTATION','expected_status':'WAITING'}
     assert client.patch(path,json=body).status_code==403
     switch(client,'staff',2)
-    assert client.patch(path,json=body).status_code==404
+    assert client.patch(path,json=body).json()['code']=='OTHER_CLINIC'
     switch(client,'staff',1)
     assert client.patch(path,json={'status':'DISCHARGED','expected_status':'WAITING'}).json()['code']=='INVALID_STATUS_TRANSITION'
     assert client.patch(path,json=body).json()['status']=='IN_CONSULTATION'
@@ -126,6 +126,8 @@ def test_audit_opening_running_balances_and_empty_period(client,database):
     assert first['total']==3 and first['opening_balance']=='1000.00'
     assert second['opening_balance']=='1000.00' and second['items'][0]['balance_after']=='990.00'
     assert first['current_balance']=='995.00'
+    # Newest entry first: the latest balance leads the first page.
+    assert first['items'][0]['balance_after']=='995.00'
     empty=client.get('/api/v1/me/audit?start_date=2000-01-01&end_date=2000-01-02').json()
     assert empty['total']==0 and empty['opening_balance']=='1000.00'
 
@@ -201,3 +203,8 @@ def test_facet_empty_and_flexible_catalog(client,database):
     catalog=client.get('/api/v1/catalogs').json()['items'][0]
     assert isinstance(catalog['id'],str) and catalog['extra']['nested'][0]=='<img onerror=alert(1)>'
     assert client.get('/api/v1/catalogs?q=.*').json()['total']==0
+    db.mongo.MedicalCatalogs.insert_many([{'specialty':'Cardiology'},{'specialty':'Cardiology'}])
+    chips=client.get('/api/v1/catalogs/specialties').json()['items']
+    assert chips==[{'specialty':'Cardiology','count':2},{'specialty':'General <script>','count':1}]
+    assert client.get('/api/v1/catalogs?specialty=Cardiology').json()['total']==2
+    assert client.get('/api/v1/catalogs?specialty=Cardio').json()['total']==0

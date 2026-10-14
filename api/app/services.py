@@ -16,23 +16,13 @@ def page_result(items, total, page, page_size, **extra):
         page=page, page_size=page_size, **extra))
 
 
-LIKE_ESCAPE = '\\'
-
-
 def literal_search(q):
     return '%' + q.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
 
 
-def like_params(*values):
-    params = []
-    for value in values:
-        params.extend((literal_search(value), LIKE_ESCAPE))
-    return params
-
-
 def date_bounds(start, end):
     if start and end and start > end:
-        raise PublicError('VALIDATION_ERROR', 422)
+        raise PublicError('INVALID_DATE_RANGE', 422)
     return start, end + timedelta(days=1) if end else None
 
 
@@ -41,17 +31,12 @@ class CareService:
         self.database = database
 
     def actors(self, q, page, size):
+        search = literal_search(q)
         source = "(SELECT 'patient' AS role,id,name FROM patients UNION ALL SELECT 'staff',id,name FROM clinics) actors"
         with self.database.cursor(readonly=True) as cur:
-            cur.execute(
-                f'SELECT COUNT(*) AS n FROM {source} WHERE name ILIKE %s ESCAPE %s OR id::text ILIKE %s ESCAPE %s',
-                like_params(q, q),
-            )
+            cur.execute(f'SELECT COUNT(*) AS n FROM {source} WHERE name ILIKE %s', (search,))
             total = cur.fetchone()['n']
-            cur.execute(
-                f'SELECT * FROM {source} WHERE name ILIKE %s ESCAPE %s OR id::text ILIKE %s ESCAPE %s ORDER BY role,id LIMIT %s OFFSET %s',
-                like_params(q, q)+[size,(page-1)*size],
-            )
+            cur.execute(f'SELECT * FROM {source} WHERE name ILIKE %s ORDER BY role,id LIMIT %s OFFSET %s', (search,size,(page-1)*size))
             return page_result(cur.fetchall(), total, page, size)
 
     def appointment_scope(self, session):
@@ -68,8 +53,8 @@ class CareService:
             source = APPOINTMENT_SELECT
             count_source = 'appointments a JOIN patients p ON p.id=a.patient_id JOIN clinics c ON c.id=a.clinic_id'
             clause, params = self.appointment_scope(session)
-            clause += " AND (p.name ILIKE %s ESCAPE %s OR c.name ILIKE %s ESCAPE %s OR a.id::text ILIKE %s ESCAPE %s)"
-            params += like_params(q, q, q)
+            clause += " AND (p.name ILIKE %s OR c.name ILIKE %s OR a.id::text=%s)"
+            params += [literal_search(q), literal_search(q), q]
             if status:
                 clause += ' AND a.status=%s'
                 params.append(status)
@@ -77,8 +62,8 @@ class CareService:
         else:
             source = f'SELECT * FROM {entity}'
             count_source = entity
-            clause = '(name ILIKE %s ESCAPE %s OR id::text ILIKE %s ESCAPE %s)'
-            params = like_params(q, q)
+            clause = '(name ILIKE %s OR id::text=%s)'
+            params = [literal_search(q), q]
             if entity=='patients' and session['role']=='patient':
                 clause += ' AND id=%s'
                 params.append(session['actor_id'])
@@ -97,7 +82,7 @@ class CareService:
 
     def detail(self, entity, record_id, session):
         if entity=='patients' and session['role']=='patient' and record_id!=session['actor_id']:
-            raise PublicError('FORBIDDEN', 403)
+            raise PublicError('OWN_RECORD_ONLY', 403)
         source = APPOINTMENT_SELECT if entity=='appointments' else f'SELECT * FROM {entity}'
         with self.database.cursor(readonly=True) as cur:
             if entity=='appointments':
@@ -112,7 +97,7 @@ class CareService:
 
     def book(self, session, body, key):
         if session['role']!='patient':
-            raise PublicError('FORBIDDEN', 403)
+            raise PublicError('PATIENT_ONLY', 403)
         patient_id = session['actor_id']
         fingerprint = hashlib.sha256(f'{body.clinic_id}:{body.copay_amount}'.encode()).hexdigest()
         with self.database.cursor() as cur:
@@ -129,7 +114,7 @@ class CareService:
                 return existing['response']
             cur.execute('SELECT id FROM clinics WHERE id=%s FOR SHARE', (body.clinic_id,))
             if not cur.fetchone():
-                raise PublicError('NOT_FOUND', 404)
+                raise PublicError('CLINIC_NOT_FOUND', 404)
             cur.execute('SELECT COALESCE(MAX(id),0) AS id FROM wallet_audit_logs WHERE patient_id=%s', (patient_id,))
             previous_audit = cur.fetchone()['id']
             # The stored procedure owns the debit, insert and unique-index enforcement.
@@ -149,12 +134,14 @@ class CareService:
 
     def status(self, record_id, session, body):
         if session['role']!='staff':
-            raise PublicError('FORBIDDEN', 403)
+            raise PublicError('STAFF_ONLY', 403)
         with self.database.cursor() as cur:
             cur.execute('SELECT * FROM appointments WHERE id=%s AND clinic_id=%s FOR UPDATE', (record_id,session['actor_id']))
             row = cur.fetchone()
             if not row:
-                raise PublicError('NOT_FOUND', 404)
+                cur.execute('SELECT 1 FROM appointments WHERE id=%s', (record_id,))
+                # Distinguish "another clinic's visit" from a visit that does not exist.
+                raise PublicError('OTHER_CLINIC', 403) if cur.fetchone() else PublicError('NOT_FOUND', 404)
             if row['status']!=body.expected_status:
                 raise PublicError('STATUS_CONFLICT', 409)
             if {'WAITING':'IN_CONSULTATION','IN_CONSULTATION':'DISCHARGED'}.get(row['status'])!=body.status:
@@ -167,7 +154,7 @@ class CareService:
     def audit(self, session, start, end, page, size):
         patient_id = session['patient_id']
         if not patient_id:
-            raise PublicError('FORBIDDEN', 403)
+            raise PublicError('NO_PATIENT_SELECTED', 403)
         start, until = date_bounds(start, end)
         clause = 'patient_id=%s'
         params = [patient_id]
@@ -199,7 +186,8 @@ class CareService:
                     cur.execute('SELECT * FROM wallet_audit_logs WHERE patient_id=%s ORDER BY timestamp,id LIMIT 1', (patient_id,))
                     earliest = cur.fetchone()
                     opening = current if not earliest else earliest['balance_after'] + (earliest['amount_changed'] if earliest['action_type']=='DEBIT' else -earliest['amount_changed'])
-            cur.execute('SELECT * FROM wallet_audit_logs WHERE '+clause+' ORDER BY timestamp,id LIMIT %s OFFSET %s', params+[size,(page-1)*size])
+            # Newest entries first; each row keeps its own stored running balance.
+            cur.execute('SELECT * FROM wallet_audit_logs WHERE '+clause+' ORDER BY timestamp DESC,id DESC LIMIT %s OFFSET %s', params+[size,(page-1)*size])
             rows = cur.fetchall()
             cur.execute("SELECT EXISTS(SELECT 1 FROM appointments WHERE patient_id=%s AND status IN ('WAITING','IN_CONSULTATION')) AS active", (patient_id,))
             active = cur.fetchone()['active']
@@ -211,7 +199,7 @@ class AnalyticsService:
         self.database = database
         # Run the inherited query, including RANGE window and DENSE_RANK, in PostgreSQL.
         from pathlib import Path
-        self.query = (Path(__file__).resolve().parent.parent/'sql/06_window_analytics.sql').read_text().strip().rstrip(';')
+        self.query = (Path(__file__).resolve().parent.parent.parent/'sql/06_window_analytics.sql').read_text().strip().rstrip(';')
 
     def revenue(self, clinic_id, start, end):
         today = datetime.now(timezone.utc).date()
@@ -220,7 +208,7 @@ class AnalyticsService:
         end = end or today
         date_bounds(start,end)
         if start<first_day or end>today:
-            raise PublicError('VALIDATION_ERROR', 422)
+            raise PublicError('DATE_OUTSIDE_WINDOW', 422)
         with self.database.cursor(readonly=True) as cur:
             cur.execute('SELECT id FROM clinics WHERE id=%s', (clinic_id,))
             if not cur.fetchone():
@@ -246,7 +234,7 @@ class AnalyticsService:
 
     def monthly(self, clinic_id, month):
         if month.day!=1:
-            raise PublicError('VALIDATION_ERROR',422)
+            raise PublicError('INVALID_MONTH',422)
         with self.database.cursor(readonly=True) as cur:
             cur.execute('SET TRANSACTION ISOLATION LEVEL REPEATABLE READ')
             cur.execute('SELECT id FROM clinics WHERE id=%s', (clinic_id,))

@@ -148,7 +148,7 @@ const AuditTrail = () => {
                     <Panel>
                         <Title>Balance history</Title>
                         <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                            Oldest first · saved running balances · this ledger cannot be edited
+                            Newest first · saved running balances · this ledger cannot be edited
                             here.
                         </Typography>
                         <State

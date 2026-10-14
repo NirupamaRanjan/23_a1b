@@ -24,7 +24,7 @@ def database():
         with connection.cursor() as cur:
             cur.execute("SELECT to_regclass('patients')")
             if cur.fetchone()[0] is None:
-                for file in sorted((ROOT/'sql').glob('*.sql')):
+                for file in sorted((ROOT.parent/'sql').glob('*.sql')):
                     if file.name.startswith('06_'):continue
                     cur.execute(file.read_text())
     db=Database(settings)

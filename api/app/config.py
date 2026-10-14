@@ -11,12 +11,5 @@ class Settings:
     mongo_db: str = os.getenv('CARECONNECT_MONGO_DB', 'careconnect')
     demo_mode: bool = os.getenv('CARECONNECT_DEMO_MODE', 'false').lower() == 'true'
     cookie_secure: bool = os.getenv('CARECONNECT_COOKIE_SECURE', 'false').lower() == 'true'
-    allowed_origins: tuple = tuple(
-        origin.strip()
-        for origin in os.getenv(
-            'CARECONNECT_ALLOWED_ORIGINS',
-            'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080',
-        ).split(',')
-        if origin.strip()
-    )
+    allowed_origins: tuple = tuple(os.getenv('CARECONNECT_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://127.0.0.1:8080').split(','))
     session_hours: int = 8

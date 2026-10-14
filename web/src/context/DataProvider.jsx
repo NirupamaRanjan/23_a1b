@@ -10,8 +10,6 @@ const DataProvider = ({ children }) => {
     const [error, setError] = useState('');
     const [revision, setRevision] = useState(0);
     const sequence = useRef(0);
-    const sessionRef = useRef(null);
-    sessionRef.current = session;
     const install = useCallback((data) => {
         if (
             !data.actor ||
@@ -34,19 +32,15 @@ const DataProvider = ({ children }) => {
     }, []);
     const loadSession = useCallback(async () => {
         const run = ++sequence.current;
-        const initial = !sessionRef.current;
-        if (initial) {
-            setLoading(true);
-            API.setCsrfToken('');
-        }
+        setLoading(true);
         setError('');
+        API.setCsrfToken('');
         try {
             const data = await API.session();
             if (run === sequence.current) install(data);
         } catch (error) {
             if (run === sequence.current) {
                 setSession(null);
-                API.setCsrfToken('');
                 setError(error.message);
             }
         } finally {

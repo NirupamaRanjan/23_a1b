@@ -10,6 +10,8 @@ import {
     TextField,
     Typography,
     styled,
+    useMediaQuery,
+    useTheme,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -67,7 +69,7 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'fit' })(({ the
     width: '100%',
     maxWidth: 1440,
     margin: '0 auto',
-    padding: fit ? '18px 40px 16px' : '36px 64px',
+    padding: fit ? '36px 64px 16px' : '36px 64px',
     flex: fit ? '1 1 0' : '1 0 auto',
     minHeight: 0,
     ...(fit && {
@@ -76,9 +78,9 @@ const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'fit' })(({ the
         overflow: 'hidden',
     }),
     [theme.breakpoints.down('md')]: {
-        padding: fit ? '12px 24px' : '28px 24px',
+        padding: fit ? '28px 24px 12px' : '28px 24px',
     },
-    [theme.breakpoints.down('sm')]: { padding: fit ? '8px 16px' : '24px 16px' },
+    [theme.breakpoints.down('sm')]: { padding: fit ? '16px 16px 8px' : '24px 16px' },
 }));
 const NAVIGATION = [
     ['Browse', '/browse'],
@@ -205,7 +207,6 @@ const ClinicSelector = () => {
             </Typography>
             <Autocomplete
                 disabled={!session}
-                disableClearable={Boolean(selectedClinic)}
                 value={selectedClinic}
                 options={options}
                 filterOptions={(values) => values}
@@ -239,12 +240,14 @@ const Shell = () => {
     const { actorKey, session, loading, error, loadSession } = useSession();
     const location = useLocation();
     const fit = location.pathname === '/reviews';
+    // Reviews keeps the standard header and spacing; only phones use the compact header.
+    const phone = useMediaQuery(useTheme().breakpoints.down('sm'));
     useEffect(() => {
         if (!fit) window.scrollTo(0, 0);
     }, [location.pathname, fit]);
     return (
         <Page fit={fit} data-reviews-layout={fit ? 'true' : undefined}>
-            <Header sx={fit ? { py: { xs: 1, sm: 0.75 } } : undefined}>
+            <Header sx={fit ? { py: { xs: 1, sm: 2.5 } } : undefined}>
                 <Stack
                     direction='row'
                     sx={{
@@ -266,7 +269,10 @@ const Shell = () => {
                             <AddIcon sx={{ fontSize: 28 }} />
                         </Box>
                         <Typography
-                            sx={{ fontSize: { xs: fit ? 15 : 20, md: 25 }, fontWeight: 700 }}
+                            sx={{
+                                fontSize: { xs: fit ? 15 : 20, sm: 20, md: 25 },
+                                fontWeight: 700,
+                            }}
                         >
                             CareConnect
                         </Typography>
@@ -276,12 +282,12 @@ const Shell = () => {
                         sx={{
                             gap: 2,
                             minWidth: 0,
-                            flex: fit ? '1 1 0' : undefined,
-                            width: { xs: fit ? 'auto' : '100%', md: 650 },
+                            flex: fit ? { xs: '1 1 0', sm: 'none' } : undefined,
+                            width: { xs: fit ? 'auto' : '100%', sm: '100%', md: 650 },
                             flexWrap: { xs: 'wrap', sm: 'nowrap' },
                         }}
                     >
-                        <ActorSwitcher compact={fit} />
+                        <ActorSwitcher compact={fit && phone} />
                         <Box
                             sx={{
                                 display: fit ? { xs: 'none', sm: 'contents' } : 'contents',
@@ -293,7 +299,11 @@ const Shell = () => {
                 </Stack>
             </Header>
             <Navigation
-                sx={fit ? { '& a': { pt: 1.25, pb: 1.25 } } : undefined}
+                sx={
+                    fit
+                        ? { '& a': { pt: { xs: 1.25, sm: 2.25 }, pb: { xs: 1.25, sm: 1.875 } } }
+                        : undefined
+                }
                 component='nav'
                 aria-label='Main navigation'
             >
@@ -304,12 +314,12 @@ const Shell = () => {
                 ))}
             </Navigation>
             <Main fit={fit} component='main' key={actorKey || 'session'}>
-                {!session && loading ? (
+                {loading ? (
                     <Panel>
                         <LinearProgress />
                         <Typography sx={{ mt: 2 }}>Loading your session…</Typography>
                     </Panel>
-                ) : !session ? (
+                ) : error || !session ? (
                     <Panel>
                         <Alert severity='error'>{error || 'No session is available.'}</Alert>
                         <Button onClick={loadSession} sx={{ mt: 2 }}>
@@ -317,10 +327,7 @@ const Shell = () => {
                         </Button>
                     </Panel>
                 ) : (
-                    <>
-                        {loading && <LinearProgress sx={{ mb: 2 }} aria-label='Updating session' />}
-                        <Outlet />
-                    </>
+                    <Outlet />
                 )}
             </Main>
             {!fit && (
