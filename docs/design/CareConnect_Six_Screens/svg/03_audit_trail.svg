@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="1440" height="1140" viewBox="0 0 1440 1140" role="img" aria-labelledby="title desc">
+<title id="title">CareConnect - Audit Trail</title><desc id="desc">One of exactly six screen designs. All shown names, records, amounts and chart values are illustrative layout data. Reference style: white header, teal navigation, pale background and rounded cards.</desc>
+<rect x="0" y="0" width="1440" height="1140" rx="0" fill="#F3F8F7" stroke="none" stroke-width="1.1"/>
+<rect x="0" y="0" width="1440" height="104" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
+<line x1="0" y1="104" x2="1440" y2="104" stroke="#D8E5E3" stroke-width="1"/>
+<rect x="36" y="31" width="44" height="44" rx="12" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<g transform="translate(46,41) scale(1.0)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 4 V 20 M 4 12 H 20"/></g>
+<text x="94" y="61" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="700" fill="#173C3A" text-anchor="start">CareConnect</text>
+<text x="746" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Acting as (demo)</text>
+<rect x="746" y="32" width="296" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="761" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Patient: Asha Rao (10482)</text>
+<g transform="translate(1010,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<text x="1062" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Selected clinic</text>
+<rect x="1062" y="32" width="330" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="1077" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Lakeview Family Clinic (217)</text>
+<g transform="translate(1360,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<rect x="0" y="105" width="1440" height="63" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
+<line x1="0" y1="168" x2="1440" y2="168" stroke="#D8E5E3" stroke-width="1"/>
+<text x="49" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Browse</text>
+<text x="149" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Transaction</text>
+<text x="306" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="start">Audit trail</text>
+<line x1="293" y1="166" x2="438" y2="166" stroke="#117C76" stroke-width="3"/>
+<text x="451" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Analytics</text>
+<text x="579" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Map</text>
+<text x="664" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Reviews</text>
+<text x="88" y="237" font-family="Arial, DejaVu Sans, sans-serif" font-size="34" font-weight="700" fill="#173C3A" text-anchor="start">Your HSA audit trail</text>
+<text x="88" y="272" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#607B79" text-anchor="start">Read-only activity for Asha Rao. Follow every credit, debit and running balance.</text>
+<text x="88" y="329" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Patient</text>
+<rect x="88" y="339" width="324" height="52" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="103" y="372" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Asha Rao · 10482</text>
+<g transform="translate(380,354) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<text x="436" y="329" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">From date (UTC)</text>
+<rect x="436" y="339" width="244" height="52" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="451" y="372" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">01 Oct 2026</text>
+<text x="704" y="329" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">To date (UTC)</text>
+<rect x="704" y="339" width="244" height="52" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="719" y="372" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">12 Oct 2026</text>
+<rect x="974" y="339" width="171" height="52" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<text x="1059.5" y="371.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Apply dates</text>
+<rect x="1165" y="339" width="187" height="52" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="1258.5" y="371.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Clear dates</text>
+<rect x="88" y="422" width="400" height="145" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="111" y="457" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="start">Opening balance</text>
+<text x="111" y="505" font-family="Arial, DejaVu Sans, sans-serif" font-size="32" font-weight="700" fill="#173C3A" text-anchor="start">5,300.00</text>
+<text x="111" y="538" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#607B79" text-anchor="start">Before the first entry in this period</text>
+<rect x="520" y="422" width="400" height="145" rx="14" fill="#E1F3F0" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="543" y="457" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="start">Current HSA balance</text>
+<text x="543" y="505" font-family="Arial, DejaVu Sans, sans-serif" font-size="32" font-weight="700" fill="#117C76" text-anchor="start">4,500.00</text>
+<text x="543" y="538" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#607B79" text-anchor="start">Latest saved patient balance</text>
+<rect x="952" y="422" width="400" height="145" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="975" y="457" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="start">Ledger access</text>
+<text x="975" y="505" font-family="Arial, DejaVu Sans, sans-serif" font-size="32" font-weight="700" fill="#173C3A" text-anchor="start">Read-only</text>
+<text x="975" y="538" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#607B79" text-anchor="start">Entries cannot be changed or removed</text>
+<rect x="88" y="594" width="1264" height="443" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="112" y="632" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Balance history</text>
+<g transform="translate(1215,611) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 6 10 H 18 V 22 H 6 Z M 8 10 V 6 A 4 4 0 0 1 16 6 V 10"/></g>
+<text x="1244" y="632" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#117C76" text-anchor="start">Immutable</text>
+<text x="112" y="666" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Oldest first · running balances reflect each saved ledger entry</text>
+<rect x="112" y="690" width="1216" height="43" rx="8" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
+<text x="132" y="718" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Audit ID</text>
+<text x="270" y="718" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Timestamp (UTC)</text>
+<text x="622" y="718" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Action</text>
+<text x="810" y="718" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Amount</text>
+<text x="1106" y="718" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Balance after</text>
+<text x="132" y="768" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">90321</text>
+<text x="270" y="768" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">02 Oct 2026, 10:14</text>
+<rect x="616" y="747" width="98" height="28" rx="14" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<text x="665.0" y="766" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#A82E2E" text-anchor="middle">DEBIT</text>
+<text x="810" y="768" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#A82E2E" text-anchor="start">−300.00</text>
+<text x="1106" y="768" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">5,000.00</text>
+<line x1="112" y1="789" x2="1328" y2="789" stroke="#D8E5E3" stroke-width="1"/>
+<text x="132" y="824" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">90372</text>
+<text x="270" y="824" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">05 Oct 2026, 09:08</text>
+<rect x="616" y="803" width="98" height="28" rx="14" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="665.0" y="822" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#117C76" text-anchor="middle">CREDIT</text>
+<text x="810" y="824" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="start">+500.00</text>
+<text x="1106" y="824" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">5,500.00</text>
+<line x1="112" y1="845" x2="1328" y2="845" stroke="#D8E5E3" stroke-width="1"/>
+<text x="132" y="880" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">90401</text>
+<text x="270" y="880" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">08 Oct 2026, 16:22</text>
+<rect x="616" y="859" width="98" height="28" rx="14" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<text x="665.0" y="878" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#A82E2E" text-anchor="middle">DEBIT</text>
+<text x="810" y="880" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#A82E2E" text-anchor="start">−500.00</text>
+<text x="1106" y="880" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">5,000.00</text>
+<line x1="112" y1="901" x2="1328" y2="901" stroke="#D8E5E3" stroke-width="1"/>
+<rect x="112" y="901" width="1216" height="56" rx="0" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="132" y="936" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">90417</text>
+<text x="270" y="936" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">12 Oct 2026, 22:31</text>
+<rect x="616" y="915" width="98" height="28" rx="14" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<text x="665.0" y="934" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#A82E2E" text-anchor="middle">DEBIT</text>
+<text x="810" y="936" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#A82E2E" text-anchor="start">−500.00</text>
+<text x="1106" y="936" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">4,500.00</text>
+<line x1="112" y1="957" x2="1328" y2="957" stroke="#D8E5E3" stroke-width="1"/>
+<text x="112" y="1003" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#607B79" text-anchor="start">Page 1 of 1 · 4 entries in this date range</text>
+<rect x="1138" y="974" width="105" height="40" rx="9" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="1190.5" y="1000.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="middle">Previous</text>
+<rect x="1256" y="974" width="72" height="40" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="1292.0" y="1000.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Next</text>
+<rect x="1256" y="974" width="72" height="40" rx="9" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="1292.0" y="1000.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="middle">Next</text>
+<g id="state-loading" inkscape:groupmode="layer" inkscape:label="Audit Trail / loading" style="display:none">
+<rect x="88" y="594" width="1264" height="443" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="116" y="640" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#173C3A" text-anchor="start">Loading ledger entries…</text>
+<rect x="116" y="678" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
+<rect x="130" y="690" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
+<rect x="116" y="742" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
+<rect x="130" y="754" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
+<rect x="116" y="806" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
+<rect x="130" y="818" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
+<text x="116" y="919" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Please wait. Existing inputs remain available.</text>
+</g>
+<g id="state-empty" inkscape:groupmode="layer" inkscape:label="Audit Trail / empty" style="display:none">
+<rect x="88" y="594" width="1264" height="443" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="111" y="477" width="350" height="38" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
+<text x="111" y="505" font-family="Arial, DejaVu Sans, sans-serif" font-size="32" font-weight="700" fill="#173C3A" text-anchor="start">4,500.00</text>
+<circle cx="147" cy="680" r="23" fill="#E1F3F0" stroke="none" stroke-width="1"/>
+<g transform="translate(136,669) scale(0.9166666666666666)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="10" cy="10" r="7"/>
+<path d="M 16 16 L 22 22"/></g>
+<text x="190" y="678" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">No audit entries in this period</text>
+<text x="190" y="713" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Choose another date range. Your ledger is read-only.</text>
+<rect x="190" y="754" width="192" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="286.0" y="784.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Clear filters</text>
+</g>
+<g id="state-error" inkscape:groupmode="layer" inkscape:label="Audit Trail / error" style="display:none">
+<rect x="88" y="594" width="1264" height="443" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="112" y="620" width="1216" height="98" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<g transform="translate(132,654) scale(1.0416666666666667)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
+<text x="171" y="659" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#A82E2E" text-anchor="start">We could not load this data</text>
+<text x="171" y="692" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#A82E2E" text-anchor="start">Retry shortly. Your current selection has been kept.</text>
+<rect x="116" y="757" width="188" height="48" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<text x="210.0" y="787.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Retry</text>
+</g>
+<text x="88" y="1097" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="start">Illustrative layout values only. Amounts are HSA account units; the schema specifies no currency.</text>
+<text x="1352" y="1097" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="end">03 / 06</text>
+</svg>

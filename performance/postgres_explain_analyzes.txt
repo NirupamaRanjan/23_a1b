@@ -1,0 +1,12 @@
+                                                             QUERY PLAN                                                              
+-------------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using idx_active_consult on appointments  (cost=0.14..8.16 rows=1 width=49) (actual time=2.240..2.245 rows=1.00 loops=1)
+   Index Cond: (patient_id = 1)
+   Index Searches: 1
+   Buffers: shared hit=5
+ Planning:
+   Buffers: shared hit=154
+ Planning Time: 41.306 ms
+ Execution Time: 2.313 ms
+(8 rows)
+

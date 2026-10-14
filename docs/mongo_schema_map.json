@@ -1,0 +1,23 @@
+{
+  "MedicalCatalogs": {
+    "specialty": "String",
+    "availability_slots": "Array",
+    "medication_details": "Object",
+    "created_at": "Date"
+  },
+  "NursePings": {
+    "nurse_id": "Int32",
+    "is_active": "Boolean",
+    "location": {
+      "type": "String (Point)",
+      "coordinates": ["Double", "Double"]
+    },
+    "created_at": "Date"
+  },
+  "PatientReviews": {
+    "patient_id": "Int32",
+    "rating": "Int32",
+    "bedside_manner_tags": ["String"],
+    "created_at": "Date"
+  }
+}
