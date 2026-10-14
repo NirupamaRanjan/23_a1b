@@ -1,2 +1,13 @@
 .DS_Store
 group8_a1.zip
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+web/dist/
+web/.env.local
+web/playwright-report/
+web/test-results/
+web/test-results-live/

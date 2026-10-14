@@ -1,0 +1,14 @@
+# Used by api/Dockerfile (build context = repository root).
+**/.env
+**/.venv
+**/node_modules
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+**/.DS_Store
+.git
+web
+docs
+performance
+api/tests
+api/docs
