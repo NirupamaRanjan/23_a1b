@@ -63,6 +63,9 @@ def test_status_authorization_compare_and_set_and_second_booking(client):
     switch(client,'staff',2)
     assert client.patch(path,json=body).json()['code']=='OTHER_CLINIC'
     switch(client,'staff',1)
+    # Staff keep the last patient in their session, but the HSA ledger stays patient-only.
+    staff_audit=client.get('/api/v1/me/audit')
+    assert staff_audit.status_code==403 and staff_audit.json()['code']=='PATIENT_ONLY'
     assert client.patch(path,json={'status':'DISCHARGED','expected_status':'WAITING'}).json()['code']=='INVALID_STATUS_TRANSITION'
     assert client.patch(path,json=body).json()['status']=='IN_CONSULTATION'
     assert client.patch(path,json=body).json()['code']=='STATUS_CONFLICT'
@@ -132,6 +135,8 @@ def test_audit_opening_running_balances_and_empty_period(client,database):
     assert first['items'][0]['balance_after']=='995.00'
     empty=client.get('/api/v1/me/audit?start_date=2000-01-01&end_date=2000-01-02').json()
     assert empty['total']==0 and empty['opening_balance']=='1000.00'
+    # The newest ledger date is reported even when the filtered period is empty.
+    assert empty['latest_entry_date']==str(datetime.now(timezone.utc).date())
 
 
 def test_analytics_window_dense_rank_and_durable_refresh(client,database):

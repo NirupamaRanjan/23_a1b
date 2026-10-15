@@ -8,7 +8,7 @@ const MESSAGES = {
     CLINIC_NOT_FOUND: 'This clinic no longer exists. Choose another clinic in Browse.',
     INVALID_COPAY:
         'Enter a positive copay with no more than two decimal places (up to 99,999,999.99).',
-    PATIENT_ONLY: 'Only patients can book. Switch to a patient in the header first.',
+    PATIENT_ONLY: 'Only patients can do this. Switch to a patient in the header first.',
     REQUEST_KEY_CONFLICT:
         'This retry belongs to different booking details. Check your appointments before starting a new booking.',
     // Appointment status
@@ -23,15 +23,18 @@ const MESSAGES = {
     OWN_RECORD_ONLY: 'While acting as a patient you can only open your own patient record.',
     NO_PATIENT_SELECTED: 'Choose a patient in the header to see an audit trail.',
     INVALID_DATE_RANGE: 'The start date must be on or before the end date.',
-    DATE_OUTSIDE_WINDOW:
-        'Choose dates on or before today (UTC). Historical dates are supported.',
+    DATE_OUTSIDE_WINDOW: 'Choose dates on or before today (UTC). Historical dates are supported.',
     INVALID_MONTH: 'Choose a month to see its discharge summary.',
     REFRESH_IN_PROGRESS: 'Another summary refresh is running. Try again in a moment.',
-    MONGO_SETUP_INCOMPLETE: 'MongoDB map setup is incomplete. From the project root run python mongo/setup.py, then retry.',
-    MONGO_PERMISSION_DENIED: 'The MongoDB account cannot run this operation. Check its database permissions.',
+    MONGO_SETUP_INCOMPLETE:
+        'MongoDB map setup is incomplete. From the project root run python mongo/setup.py, then retry.',
+    MONGO_PERMISSION_DENIED:
+        'The MongoDB account cannot run this operation. Check its database permissions.',
     MONGO_AUTH_FAILED: 'MongoDB rejected the configured credentials. Check the active .env.',
-    MONGO_VERSION_UNSUPPORTED: 'The MongoDB server does not support this query. Use MongoDB 7 or newer.',
-    MONGO_QUERY_FAILED: 'The MongoDB query failed. Check the backend log for the server error code.',
+    MONGO_VERSION_UNSUPPORTED:
+        'The MongoDB server does not support this query. Use MongoDB 7 or newer.',
+    MONGO_QUERY_FAILED:
+        'The MongoDB query failed. Check the backend log for the server error code.',
     DOCUMENT_TOO_LARGE: 'This catalog document is too large to display.',
     VALIDATION_ERROR:
         'Some of the values sent were not valid. Check what you entered and try again.',
@@ -41,6 +44,8 @@ const MESSAGES = {
     FORBIDDEN: 'You do not have permission to do this as the current actor.',
     DEMO_MODE_OFF: 'Switching actors is only available when the API runs in demo mode.',
     // Server and databases
+    API_UNREACHABLE:
+        'Could not reach the CareConnect API. Check that it is running (cd api, then python main.py), then retry.',
     POSTGRES_UNAVAILABLE: 'PostgreSQL is not reachable. Check that it is running, then retry.',
     MONGO_UNAVAILABLE:
         'MongoDB (nurse, review and catalog data) is not reachable. Check that it is running, then retry.',
@@ -103,6 +108,10 @@ export class ApiClient {
             try {
                 data = await result.json();
             } catch {
+                // The dev proxy (Vite) and Nginx answer 500/502-504 without JSON when the API
+                // server itself is not running; say so instead of "unexpected response".
+                if (!mutation && [500, 502, 503, 504].includes(result.status))
+                    throw new ApiError(MESSAGES.API_UNREACHABLE, result.status, 'API_UNREACHABLE');
                 throw new ApiError(
                     'The API returned an unexpected response. Check the backend connection.',
                     result.status,
@@ -135,7 +144,7 @@ export class ApiClient {
             throw new ApiError(
                 mutation
                     ? 'Confirmation is uncertain. Keep the same details when retrying, and check your appointments before starting a different booking.'
-                    : 'Could not reach the CareConnect API. Check that it is running, then retry.',
+                    : MESSAGES.API_UNREACHABLE,
                 0,
                 'NETWORK_ERROR',
                 mutation
@@ -174,6 +183,7 @@ export class ApiClient {
         });
     revenue = (params, options) => this.request('/analytics/revenue', { params, ...options });
     ranking = (params, options) => this.request('/analytics/ranking', { params, ...options });
+    coverage = (params, options) => this.request('/analytics/coverage', { params, ...options });
     monthly = (params, options) => this.request('/analytics/monthly', { params, ...options });
     refreshMonthly = () => this.request('/analytics/monthly/refresh', { method: 'POST' });
     nurses = (params, options) =>

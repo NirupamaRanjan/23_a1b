@@ -56,4 +56,20 @@ describe('same-origin API boundary', () => {
             message: 'The request could not be completed. Try again shortly.',
         });
     });
+    it('explains a stopped API when the dev proxy answers without JSON', async () => {
+        vi.stubGlobal(
+            'fetch',
+            vi.fn().mockResolvedValue({
+                ok: false,
+                status: 502,
+                json: async () => {
+                    throw new SyntaxError('Unexpected end of JSON input');
+                },
+            })
+        );
+        await expect(new ApiClient().audit()).rejects.toMatchObject({
+            code: 'API_UNREACHABLE',
+            message: expect.stringContaining('Could not reach the CareConnect API'),
+        });
+    });
 });

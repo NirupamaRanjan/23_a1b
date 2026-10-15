@@ -37,7 +37,7 @@ services:
       PGUSER: postgres
       PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
       CARECONNECT_MONGO_URI: mongodb://mongo:27017/
-      CARECONNECT_MONGO_DB: medical_db
+      CARECONNECT_MONGO_DB: careconnect_a2
       CARECONNECT_DEMO_MODE: "true"
       CARECONNECT_COOKIE_SECURE: "false"
       CARECONNECT_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080},http://127.0.0.1:${WEB_PORT:-8080}

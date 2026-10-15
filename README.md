@@ -10,13 +10,13 @@ Handover and verification notes: [docs/handover_note.md](docs/handover_note.md).
 
 ## MongoDB database and setup (current release)
 
-**The application uses the MongoDB database `medical_db`.** Within it, `Nurses`, `NursePings`,
+**The application uses the MongoDB database `careconnect_a2`.** Within it, `Nurses`, `NursePings`,
 `PatientReviews` and `MedicalCatalogs` are separate collections. This does not rename PostgreSQL.
 Edit your existing active root `.env` (or legacy `api/.env`) to set:
 
 ```dotenv
 CARECONNECT_MONGO_URI=mongodb://localhost:27017/
-CARECONNECT_MONGO_DB=medical_db
+CARECONNECT_MONGO_DB=careconnect_a2
 ```
 
 Retain your actual URI/credentials if different. A conflicting exported `CARECONNECT_MONGO_DB`
@@ -24,7 +24,7 @@ takes precedence over `.env`; remove it in PowerShell with
 `Remove-Item Env:CARECONNECT_MONGO_DB -ErrorAction SilentlyContinue` before launching again.
 Other runtime MongoDB database names are rejected with an explicit configuration error.
 No existing database is renamed, copied or deleted automatically. If your records currently live
-in a different database, import the desired records into `medical_db` before normal use.
+in a different database, import the desired records into `careconnect_a2` before normal use.
 
 With the Python environment ready, run from the project root:
 
@@ -82,9 +82,9 @@ release's `web` sources. Docker users must rebuild the web image. See the layout
 | Screen | Workflow | What it shows |
 |---|---|---|
 | Browse | - | Patients, clinics and appointments with server-side paging, search/filter and an inline detail view. Staff move appointments WAITING -> IN_CONSULTATION -> DISCHARGED from the detail view. |
-| Transaction | Workflow 1 | Books an appointment through `sp_execute_appointment`, shows the HSA balance before/after and the new `wallet_audit_logs` row. Insufficient balance and a second active visit (partial unique index) show friendly messages. |
-| Audit trail | - | Read-only `wallet_audit_logs` for the session patient with a date filter, opening balance and running balance. |
-| Analytics | Workflow 2 + view | 7-day moving average chart (Part A window query), `DENSE_RANK()` ranking table, monthly discharges from the materialized view with "last refreshed" time and a refresh button (clinic staff). |
+| Transaction | Workflow 1 | Patients only (clinic staff see an access message). Books an appointment through `sp_execute_appointment`, shows the HSA balance before/after and the new `wallet_audit_logs` row. Insufficient balance and a second active visit (partial unique index) show friendly messages. |
+| Audit trail | - | Patients only (clinic staff see an access message; the API answers `PATIENT_ONLY`). Read-only `wallet_audit_logs` for the session patient with a date filter, opening balance and running balance. Opens on the last 30 days, or on the 30 days up to the patient's latest entry when the last 30 days are empty. |
+| Analytics | Workflow 2 + view | 7-day moving average chart (Part A window query), `DENSE_RANK()` ranking table, monthly discharges from the materialized view with "last refreshed" time and a refresh button (clinic staff). Opens on the latest dates that have discharged revenue, so an older database is not shown empty. |
 | Map | Workflow 3 | `$geoNear` results around a selectable origin, fixed 5 km radius, list sorted by distance, polling every 10 s. |
 | Reviews | Workflow 4 | `$facet` rating distribution, top tags, overall average and the flexible `MedicalCatalogs` documents. |
 
@@ -466,6 +466,15 @@ accessible for verifying/exporting its frames in this session.
 
 
 ## Analytics dates and zero totals
+
+**Why Analytics (and the Audit trail) looked empty:** seeded demo data covers the 60 days before
+the day the seeder ran and never moves forward by itself. Once a database is more than about a
+month old, "the last 30 days", "today's ranking" and "this month" contain no discharged revenue.
+The Analytics screen now asks `GET /api/v1/analytics/coverage` for the latest recorded revenue
+dates and opens the chart (30 days), ranking date and month there, with a note saying so; the Audit
+trail does the same with the patient's latest entry. Dates you change yourself are kept. To get
+current dates again instead, reseed PostgreSQL (`python data_generation/postgres_seeder.py`, which
+replaces the relational demo data) and refresh the monthly view.
 
 Thirty days is the initial chart range, not a limit on historical selection. Older chart and ranking
 dates are now supported through today. The selected-period revenue card follows the chart dates;

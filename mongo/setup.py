@@ -16,7 +16,7 @@ def mongo_environment():
     load_dotenv(root_env if root_env.is_file() else ROOT / 'api/.env', override=False)
     name = os.getenv('CARECONNECT_MONGO_DB', SCHEMA['database'])
     if name != SCHEMA['database']:
-        raise ValueError('Set CARECONNECT_MONGO_DB=medical_db in the active .env and remove any conflicting exported value.')
+        raise ValueError('Set CARECONNECT_MONGO_DB=careconnect_a2 in the active .env and remove any conflicting exported value.')
     return os.getenv('CARECONNECT_MONGO_URI', 'mongodb://localhost:27017/'), name
 
 

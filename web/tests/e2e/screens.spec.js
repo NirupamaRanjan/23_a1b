@@ -273,9 +273,52 @@ test('Staff with a retained audit patient cannot submit a booking', async ({ pag
     await page.goto('/transaction');
     await page.getByRole('button', { name: 'Choose demo actor' }).click();
     await page.getByRole('button', { name: 'Clinic staff: Lakeview Family Clinic' }).click();
-    await expect(page.getByText('Only patients can book. Switch to a patient in the header first.')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Book appointment', exact: true })).toBeDisabled();
+    await expect(page.getByRole('heading', { name: 'Clinic staff cannot book appointments' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Book appointment', exact: true })).toHaveCount(0);
+    await expect(page.getByLabel('Copay amount')).toHaveCount(0);
     expect(state.calls.filter((call) => call.path === '/appointments' && call.method === 'POST')).toHaveLength(0);
+});
+
+test('Clinic staff see an access message instead of the audit trail', async ({ page }) => {
+    const state = await setupApi(page);
+    await page.goto('/audit');
+    await expect(page.getByTestId('audit-patient')).toContainText('Asha Rao');
+    await page.getByRole('button', { name: 'Choose demo actor' }).click();
+    await page.getByRole('button', { name: 'Clinic staff: Lakeview Family Clinic' }).click();
+    await expect(page.getByRole('heading', { name: 'Clinic staff cannot access the audit trail' })).toBeVisible();
+    const before = state.calls.filter((call) => call.path === '/me/audit').length;
+    await expect(page.getByTestId('audit-patient')).toHaveCount(0);
+    await expect(page.getByRole('table', { name: 'HSA audit entries' })).toHaveCount(0);
+    await page.getByRole('link', { name: 'Transaction', exact: true }).click();
+    await page.getByRole('link', { name: 'Audit trail', exact: true }).click();
+    expect(state.calls.filter((call) => call.path === '/me/audit').length).toBe(before);
+    await page.getByRole('button', { name: 'Go to Browse' }).click();
+    await expect(page).toHaveURL(/\/browse$/);
+});
+
+test('Analytics opens on the latest recorded data when the database is older than 30 days', async ({ page }) => {
+    const state = await setupApi(page);
+    state.latestRevenueDate = '2026-08-31';
+    await page.goto('/analytics');
+    await expect(page.getByTestId('analytics-latest-note')).toContainText('2026-08-31');
+    await expect(page.getByLabel('From (UTC)', { exact: true })).toHaveValue('2026-08-02');
+    await expect(page.getByLabel('To (UTC)', { exact: true })).toHaveValue('2026-08-31');
+    await expect(page.getByLabel('Ranking date (UTC)')).toHaveValue('2026-08-31');
+    await expect(page.getByLabel('Month (UTC)')).toHaveValue('2026-08');
+    await expect.poll(() => state.calls.filter((x) => x.path === '/analytics/revenue').at(-1)?.query.end_date).toBe('2026-08-31');
+    // No query is sent with the empty "today" defaults before the latest dates are known.
+    expect(state.calls.filter((x) => x.path === '/analytics/ranking').every((x) => x.query.date === '2026-08-31')).toBe(true);
+    await expect(page.getByRole('img', { name: /Seven-day moving/ })).toBeVisible();
+});
+
+test('Audit trail opens on the latest entries when the last 30 days are empty', async ({ page }) => {
+    const state = await setupApi(page);
+    state.latestAuditDate = '2026-08-20';
+    await page.goto('/audit');
+    await expect(page.getByLabel('From date (UTC)')).toHaveValue('2026-07-22');
+    await expect(page.getByLabel('To date (UTC)')).toHaveValue('2026-08-20');
+    await expect(page.getByText(/up to the latest entry on 2026-08-20/)).toBeVisible();
+    await expect(page.getByRole('table', { name: 'HSA audit entries' })).toBeVisible();
 });
 
 test('Changing catalog specialty resets pagination before fetching', async ({ page }) => {

@@ -3,7 +3,7 @@
 ## Inherited application
 
 This update starts from the user's latest uploaded CareConnect ZIP. PostgreSQL owns patients,
-clinics, appointments and wallet audit history; MongoDB medical_db owns nurse telemetry, review
+clinics, appointments and wallet audit history; MongoDB careconnect_a2 owns nurse telemetry, review
 facets and medical catalogs. The uploaded SQL session/retry/refresh support and nurse-directory
 implementation are retained. No new database tables, columns or collections were added by this
 update. Original SQL business rules, booking procedure, audit immutability and 5 km latest/active
@@ -15,6 +15,20 @@ in the root README before submission; do not invent contribution names.
 
 ## Changes and reasons
 
+- Clinic staff can no longer see patient-only screens. Transaction and Audit trail show an access
+  message with a link to Browse instead of the booking form or ledger, and `GET /me/audit` returns
+  403 `PATIENT_ONLY` for staff (previously a staff session still returned the last patient's ledger).
+- Analytics was empty on any database seeded more than about 30 days earlier, because the chart,
+  ranking and month defaulted to "now". `GET /analytics/coverage` reports the latest DISCHARGED
+  revenue dates, and the screen opens on them with an explanatory note (dates the user edits are
+  kept). The Audit trail moves its default 30-day range to the patient's latest entry
+  (`latest_entry_date` in the audit response) in the same situation.
+- Housekeeping: restored the missing `.env.example` and `.env.docker.example` (README, PowerShell
+  scripts and CI copy them); `postgres_seeder.py` now uses the same root `.env` connection as the
+  API; removed files the documentation already described as removed (`api/app/mongo_setup.py`,
+  `api/docker-compose.yml`), leftover `package*.before-fix.json`, committed `.pyc` files and the
+  unused axios dependency; a stopped API now reports "Could not reach the CareConnect API" instead of
+  "unexpected response".
 - Map requests the device's current browser position on entry; it waits for a usable origin
   before requesting nurses. It shows reported position accuracy. Denial, timeout or missing
   browser support has a clear message and manual/clinic recovery. Pending callbacks cannot

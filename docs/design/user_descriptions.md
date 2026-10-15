@@ -22,7 +22,7 @@ their earlier fixed artboard proportions; they are the design-stage record, not 
 
 The Medical catalog uses 16–18 px desktop text, larger availability-table rows and grouped
 medication/availability sections. Shorter screens retain internal scrolling instead of compressing
-field values. This content is read from `medical_db.MedicalCatalogs`, not frontend fixture data.
+field values. This content is read from `careconnect_a2.MedicalCatalogs`, not frontend fixture data.
 
 
 ## Location, date filters and empty results

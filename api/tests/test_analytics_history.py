@@ -38,3 +38,21 @@ def test_empty_reversed_future_and_unknown_clinic_ranges_remain_honest(client):
     assert future.status_code==422
     assert client.get('/api/v1/analytics/ranking',params={'date':str(today+timedelta(days=1))}).status_code==422
     assert client.get('/api/v1/analytics/revenue',params={'clinic_id':99999}).status_code==404
+
+
+def test_coverage_reports_latest_discharged_dates_for_old_data(client,database):
+    db,_ = database
+    today=datetime.now(timezone.utc).date()
+    empty=client.get('/api/v1/analytics/coverage',params={'clinic_id':1}).json()
+    assert empty['latest_date'] is None and empty['clinic_latest_date'] is None
+    assert empty['today']==str(today)
+    old=today-timedelta(days=50)
+    with db.cursor() as cur:
+        cur.execute("INSERT INTO appointments(patient_id,clinic_id,copay_amount,status,created_at) VALUES(1,1,10,'DISCHARGED',%s),(2,2,10,'DISCHARGED',%s),(3,1,10,'WAITING',%s)",
+                    (old-timedelta(days=5),old,today))
+    data=client.get('/api/v1/analytics/coverage',params={'clinic_id':1}).json()
+    # WAITING visits are not revenue, so the latest revenue date stays 50 days ago.
+    assert data['latest_date']==str(old) and data['earliest_date']==str(old-timedelta(days=5))
+    assert data['clinic_latest_date']==data['clinic_earliest_date']==str(old-timedelta(days=5))
+    assert client.get('/api/v1/analytics/coverage').json()['clinic_latest_date'] is None
+    assert client.get('/api/v1/analytics/coverage',params={'clinic_id':0}).status_code==422

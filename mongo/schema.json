@@ -1,5 +1,5 @@
 {
-  "database": "medical_db",
+  "database": "careconnect_a2",
   "collections": {
     "NursePings": {
       "schema": {

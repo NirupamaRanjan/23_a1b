@@ -40,8 +40,8 @@ def seed(reset=False):
     client = MongoClient(uri)
     db = client[database_name]
 
-    if db.name != 'medical_db':
-        raise ValueError('Set CARECONNECT_MONGO_DB=medical_db before seeding.')
+    if db.name != 'careconnect_a2':
+        raise ValueError('Set CARECONNECT_MONGO_DB=careconnect_a2 before seeding.')
     collections = ('Nurses', 'NursePings', 'PatientReviews', 'MedicalCatalogs')
     if not reset and any(db[name].estimated_document_count() for name in collections):
         client.close()
@@ -139,6 +139,6 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     repo = Path(__file__).resolve().parents[1]
     load_dotenv(repo / '.env' if (repo / '.env').is_file() else repo / 'api/.env', override=False)
-    parser = argparse.ArgumentParser(description='Seed only an empty medical_db; never applies schema.')
+    parser = argparse.ArgumentParser(description='Seed only an empty careconnect_a2; never applies schema.')
     parser.add_argument('--reset-data', action='store_true', help='Explicitly replace existing demo documents')
     seed(reset=parser.parse_args().reset_data)

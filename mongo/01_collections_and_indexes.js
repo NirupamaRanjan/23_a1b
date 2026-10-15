@@ -8,7 +8,7 @@ const schemaPath = [process.env.CARECONNECT_MONGO_SCHEMA,
 if (!schemaPath) throw new Error('Run this script from the project root, or set CARECONNECT_MONGO_SCHEMA.');
 const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
 if (process.env.CARECONNECT_MONGO_DB && process.env.CARECONNECT_MONGO_DB !== schema.database)
-  throw new Error('Set CARECONNECT_MONGO_DB=medical_db.');
+  throw new Error('Set CARECONNECT_MONGO_DB=careconnect_a2.');
 db = db.getSiblingDB(schema.database);
 for (const [name, definition] of Object.entries(schema.collections)) {
   const options = {validator: {$jsonSchema: definition.schema}, validationLevel: 'strict', validationAction: 'error'};
@@ -19,6 +19,6 @@ for (const [name, definition] of Object.entries(schema.collections)) {
   for (const index of definition.indexes)
     db.getCollection(name).createIndex(Object.fromEntries(index.keys), index.options || {});
 }
-print('medical_db schema applied. Existing documents preserved.');
+print('careconnect_a2 schema applied. Existing documents preserved.');
 
 })();

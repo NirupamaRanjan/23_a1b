@@ -37,9 +37,9 @@ def database_url_from_environment():
 
 
 def mongo_database_from_environment():
-    name = os.getenv('CARECONNECT_MONGO_DB', 'medical_db')
-    if name != 'medical_db':
-        raise ValueError('Set CARECONNECT_MONGO_DB=medical_db in the active .env; no other runtime MongoDB database is supported.')
+    name = os.getenv('CARECONNECT_MONGO_DB', 'careconnect_a2')
+    if name != 'careconnect_a2':
+        raise ValueError('Set CARECONNECT_MONGO_DB=careconnect_a2 in the active .env; no other runtime MongoDB database is supported.')
     return name
 
 

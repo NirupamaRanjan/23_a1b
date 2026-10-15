@@ -23,6 +23,9 @@ export const setupApi = async (page) => {
         bookFailure: '',
         refreshFailure: false,
         nursesFailure: false,
+        // Simulates an older database: latest DISCHARGED revenue / ledger date (null = today).
+        latestRevenueDate: null,
+        latestAuditDate: null,
         calls: [],
         active: false,
         bookings: new Map(),
@@ -102,6 +105,18 @@ export const setupApi = async (page) => {
         if (path.startsWith('/clinics/')) return send(path.endsWith('/301') ? greenfield : clinic);
         if (path === '/patients') return send(result([patient, other]));
         if (path.startsWith('/patients/')) return send(path.endsWith('/10483') ? other : patient);
+        if (
+            path === '/me/audit' &&
+            state.latestAuditDate &&
+            url.searchParams.get('start_date') > state.latestAuditDate
+        )
+            return send({
+                ...result([]),
+                current_balance: state.session.patient.hsa_balance,
+                opening_balance: state.session.patient.hsa_balance,
+                has_active_appointment: false,
+                latest_entry_date: state.latestAuditDate,
+            });
         if (path === '/me/audit')
             return send({
                 ...result([
@@ -169,6 +184,17 @@ export const setupApi = async (page) => {
             return send(
                 state.appointments.find((row) => row.id === Number(path.split('/').at(-1)))
             );
+        if (path === '/analytics/coverage') {
+            const today = new Date().toISOString().slice(0, 10);
+            const latest = state.latestRevenueDate || today;
+            return send({
+                earliest_date: '2026-01-01',
+                latest_date: latest,
+                clinic_earliest_date: url.searchParams.get('clinic_id') ? '2026-01-01' : null,
+                clinic_latest_date: url.searchParams.get('clinic_id') ? latest : null,
+                today,
+            });
+        }
         if (path === '/analytics/revenue')
             return send({
                 total_copay_revenue: '61500.00',

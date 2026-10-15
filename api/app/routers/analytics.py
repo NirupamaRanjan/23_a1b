@@ -30,6 +30,12 @@ def revenue(
     return request.app.state.analytics.revenue(clinic_id, start_date, end_date)
 
 
+@router.get('/coverage')
+def coverage(request: Request, clinic_id: Annotated[int | None, Query(gt=0, le=2147483647)] = None,
+             actor=Depends(session)):
+    return request.app.state.analytics.coverage(clinic_id)
+
+
 @router.get('/ranking')
 def ranking(
     request: Request,
