@@ -14,3 +14,5 @@ web/test-results-live/
 .env.*
 !.env.example
 !.env.docker.example
+.github
+.gitattributes

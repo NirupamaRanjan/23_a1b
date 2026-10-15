@@ -1,114 +1,186 @@
-# FastAPI integration contract for the six React screens
+# CareConnect API endpoints
 
-This contract is implemented by the FastAPI server in `api/app/`. The inherited repository supplied the database scripts; the added class-based service layer adapts them without adding UI screens. All paths are under `/api/v1`, proxied on the frontend origin. Responses below describe their fields; numeric IDs are the assigned SERIAL/INT values, decimal money is returned as exact strings, and timestamps are ISO 8601 with UTC offset.
+The FastAPI server in `api/app/` serves every endpoint under **`/api/v1`** (plus `GET /api/health`).
+The React app calls them on its own origin: the Vite dev server (or Nginx in Docker) forwards `/api`
+to the API. Interactive documentation is generated at **http://127.0.0.1:8000/api/docs**.
 
-## Session and identity
+**Conventions**
 
-`GET /session` must return:
+- **Identity:** every endpoint except `/api/health` needs the session cookie `careconnect_session`
+  (HttpOnly, SameSite=Strict), created by `GET /session`. The patient or clinic is always taken from
+  the server-side session, never from a browser-supplied ID.
+- **Changes** (`POST`, `PATCH`) also need the header `X-CSRF-Token: <csrf_token from /session>` and an
+  allowed `Origin`; otherwise `403 CSRF_FAILED`.
+- **Money** is an exact decimal string with two places (`"500.00"`); **dates** are `YYYY-MM-DD` (UTC);
+  **timestamps** are ISO 8601 with a UTC offset; IDs are integers.
+- **Lists** return the paged envelope `{items, total, pages, page, page_size}`. `total` counts all pages.
+  `page ≥ 1`; `page_size` 1–100 (default 5). `q` is a literal search string of at most 120 characters.
+- **Errors** return only a public code, e.g. `{"code": "INSUFFICIENT_HSA_BALANCE"}` (see [Error codes](#error-codes));
+  SQL text, stack traces and connection details are never returned.
+
+## Health
+
+| Method & path | Input | Output |
+|---|---|---|
+| `GET /api/health` | – | `{"status":"ok"}` when PostgreSQL and MongoDB both answer |
+
+## Session and demo actors
+
+| Method & path | Input | Output |
+|---|---|---|
+| `GET /session` | – | Current session; in demo mode a new patient session is created if none exists (sets the cookie) |
+| `GET /session/actors` | `q`, `page`, `page_size` | Paged `{role, id, name}` actors (patients and clinics) – **demo mode only** |
+| `POST /session/actor` | `{"role":"patient"\|"staff","actor_id":12}` | New session for that actor (cookie rotated) – **demo mode only** |
+
+`GET /session` response:
 
 ```json
 {
-  "actor": {"role":"patient","id":10482,"name":"Asha Rao"},
-  "patient": {"id":10482,"name":"Asha Rao","hsa_balance":"5000.00"},
-  "clinic": {"id":217,"name":"Lakeview Family Clinic","latitude":17.445376,"longitude":78.346144,"is_accepting_patients":true},
-  "csrf_token":"SESSION_BOUND_RANDOM_TOKEN",
-  "demo_mode":false
+  "actor":   {"role": "patient", "id": 1, "name": "Pooja Sandal"},
+  "patient": {"id": 1, "name": "Pooja Sandal", "hsa_balance": "1331.43"},
+  "clinic":  {"id": 1, "name": "Dewan Medical Center", "latitude": 17.4439, "longitude": 78.3535, "is_accepting_patients": true},
+  "csrf_token": "random-session-bound-token",
+  "demo_mode": true
 }
 ```
 
-This is a contract example, not a runtime fallback. Establish identity/permissions on the server. In patient sessions, `patient` must be that authenticated/authorised patient. In staff sessions it can be an explicitly server-authorised patient context or null. Audit Trail shows this name without a dropdown. Do not accept an arbitrary patient_id from the browser as proof of permission.
-
-The API must validate `X-CSRF-Token` on all POST/PATCH requests, including demo switching and refresh. Cookies are server-managed; session/CSRF tokens are not stored in localStorage/sessionStorage by the client. Real deployments need an identity/session mechanism; the UI adds no separate login screen.
-
-Controlled demo mode only:
-
-- `GET /session/actors?q=&page=1&page_size=5` -> a bounded paged list of permitted `{role,id,name}` actor choices.
-- `POST /session/actor` with `{role,actor_id}` -> return a complete updated session with a session-bound CSRF token. Reject this endpoint outside authorised demo mode. Never grant production access merely because the browser posts `role: staff`.
-
-## Paged envelope
-
-All list endpoints return `{items:[...],total:123,pages:25,page:1,page_size:5}`. `total` is the filtered count across all pages, not the count of the current page. Validate page_size against the maximum (100 for relational lists; 5 for catalogs); use parameterised paging/search and a stable secondary ID ordering. Search q is a literal string of at most 120 characters.
+For a clinic-staff actor, `actor.role` is `"staff"`, `actor.id` is the clinic ID and `clinic` is that clinic.
 
 ## Browse
 
-- `GET /patients?q=&page=&page_size=` -> id, name, hsa_balance. Enforce visibility scope server-side.
-- `GET /patients/{id}` -> that patient's authorised details.
-- `GET /clinics?q=&accepting=true|false&page=&page_size=` -> id, name, latitude, longitude, is_accepting_patients.
-- `GET /clinics/{id}` -> those clinic fields.
-- `GET /appointments?q=&status=&page=&page_size=` -> id, patient_id/name, clinic_id/name, copay_amount, status, created_at, and server-computed can_update_status.
-- `GET /appointments/{id}` -> the same joined detail fields; enforce actor/clinic scope.
-- `PATCH /appointments/{id}/status` with `{status,expected_status}` -> updated row. Authorise staff, lock/check the expected state and permit only WAITING -> IN_CONSULTATION -> DISCHARGED. Keep the inherited status trigger and partial unique index.
+| Method & path | Input | Output |
+|---|---|---|
+| `GET /patients` | `q`, `page`, `page_size` | Paged `{id, name, hsa_balance}`. A patient sees only their own record. |
+| `GET /patients/{id}` | – | `{id, name, hsa_balance}`; a patient asking for someone else gets `403 OWN_RECORD_ONLY` |
+| `GET /clinics` | `q`, `accepting=true\|false`, `page`, `page_size` | Paged `{id, name, latitude, longitude, is_accepting_patients}` |
+| `GET /clinics/{id}` | – | The same clinic fields |
+| `GET /appointments` | `q`, `status=WAITING\|IN_CONSULTATION\|DISCHARGED`, `page`, `page_size` | Paged appointments (below), newest first. Patients see their own; staff see their clinic's. |
+| `GET /appointments/{id}` | – | One appointment in the same scope, else `404 NOT_FOUND` |
 
-The Book at this clinic button stores the fetched clinic object in React context and routes to Transaction. It does not cause a booking by itself.
+Appointment fields: `{id, patient_id, patient_name, clinic_id, clinic_name, copay_amount, status, created_at, can_update_status}`.
+`can_update_status` is true only for staff of that clinic while the visit is not discharged.
 
-## Transaction and audit
+## Workflow 1 – booking (Transaction screen)
 
-`POST /appointments` body: `{clinic_id:217,copay_amount:"500.00"}`. Derive patient_id from the trusted server session. Validate positive copay with at most two decimal places and call `sp_execute_appointment(patient_id,clinic_id,copay)` inside a transaction.
+**`POST /appointments`** – patients only.
 
-Require `Idempotency-Key`: persist the key, actor and request fingerprint/result atomically; identical retries return the same result, changed details with that key return 409. The client persists only the random retry key and a hashed request fingerprint in per-tab sessionStorage, with an in-memory fallback. It never uses that storage as authentication.
+Headers: `X-CSRF-Token`, `Idempotency-Key: <uuid>` (a retry with the same key and details returns the
+original result; the same key with different details returns `409 REQUEST_KEY_CONFLICT`).
 
-Response:
+Body: `{"clinic_id": 1, "copay_amount": "250.00"}` – positive, at most two decimals.
+
+The API locks the patient, calls `sp_execute_appointment(patient_id, clinic_id, copay)` in one
+transaction and returns the rows the procedure and trigger wrote. `201 Created`:
 
 ```json
 {
-  "appointment":{"id":558201,"patient_id":10482,"clinic_id":217,"clinic_name":"Lakeview Family Clinic","copay_amount":"500.00","status":"WAITING","created_at":"2026-10-12T22:31:00Z"},
-  "balance_before":"5000.00","balance_after":"4500.00",
-  "audit_log":{"id":90417,"patient_id":10482,"amount_changed":"500.00","action_type":"DEBIT","balance_after":"4500.00","timestamp":"2026-10-12T22:31:00Z"}
+  "appointment": {"id": 50001, "patient_id": 1, "patient_name": "Pooja Sandal", "clinic_id": 1,
+                  "clinic_name": "Dewan Medical Center", "copay_amount": "250.00", "status": "WAITING",
+                  "created_at": "2026-10-15T16:17:02+00:00", "can_update_status": false},
+  "balance_before": "1331.43",
+  "balance_after": "1081.43",
+  "audit_log": {"id": 100001, "patient_id": 1, "amount_changed": "250.00", "action_type": "DEBIT",
+                "balance_after": "1081.43", "timestamp": "2026-10-15T16:17:02+00:00"}
 }
 ```
 
-The procedure currently returns no generated IDs. Capture the exact appointment/audit in the same locked transaction, or document an output-ID procedure adaptation. Do not select a random/latest audit after releasing the patient lock. Never synthesize a trigger row in application code. Return only after the transaction commits.
+Errors: `INSUFFICIENT_HSA_BALANCE`, `ACTIVE_VISIT_EXISTS` (partial unique index), `CLINIC_NOT_ACCEPTING`,
+`CLINIC_NOT_FOUND`, `INVALID_COPAY`, `PATIENT_ONLY` (clinic staff), `REQUEST_KEY_CONFLICT`.
 
-`GET /me/audit?start_date=&end_date=&page=&page_size=` must derive the patient from the server session and return the paged envelope plus `current_balance`, `opening_balance`, `has_active_appointment` and `latest_entry_date` (UTC date of the patient's newest ledger entry, ignoring the filter; null when there is none). Patients only: clinic staff get 403 `PATIENT_ONLY`, even though a staff session remembers the last patient. Items are id, patient_id, amount_changed, action_type, balance_after, timestamp. Use inclusive UTC date bounds (end date implemented as < next day). Order newest-first by timestamp DESC, id DESC; calculate the opening balance for the entire selected period, not just the page. `total` drives the Number of entries card. No audit edit/delete API is required.
+## Appointment status (Browse, clinic staff)
 
-## Analytics
+**`PATCH /appointments/{id}/status`** – clinic staff of that appointment's clinic.
 
-- `GET /analytics/revenue?clinic_id=&start_date=&end_date=` -> `{items:[{transaction_date,daily_total,moving_avg_7d}],total_copay_revenue:"61500.00"}`. Preserve the assigned DISCHARGED-only RANGE-window query; do not silently change it to zero-filled days. The initial view covers the last 30 UTC calendar dates, but any historical range through today is allowed. The API reads sql/08_analytics_history.sql, retaining the seven-day lookback before filtering the visible interval. total_copay_revenue is the sum of the selected clinic's daily totals within the selected dates. The response also includes the effective start_date/end_date. The original assigned 30-day SQL 06 query remains available unchanged for direct reference.
-- `GET /analytics/coverage?clinic_id=` (clinic optional) -> `{earliest_date,latest_date,clinic_earliest_date,clinic_latest_date,today}`: the first and last UTC dates with DISCHARGED revenue, overall and for the clinic (null when none). The Analytics screen opens on the 30 days ending at the clinic's latest revenue date (capped at today), the ranking on the overall latest date and the month of that date, so an older database is not shown as empty. Dates the user changes are kept.
-- `GET /analytics/ranking?date=&page=&page_size=` -> paged `{clinic_id,clinic_name,transaction_date,moving_avg_7d,rank_by_revenue}`. Preserve DENSE_RANK partition by transaction_date, ordered by moving_avg_7d. The default UI date is the latest date with recorded revenue (today on current data); an empty date is an honest empty state.
-- `GET /analytics/monthly?clinic_id=&month=YYYY-MM-01` -> `{total_discharges:214,last_refreshed_at:ISO8601|null}` for the supplied monthly discharge view.
-- `POST /analytics/monthly/refresh` -> last successful refresh metadata. Authorise staff; use `refresh_clinic_monthly_discharges()` concurrently and keep a durable successful timestamp consistent with the refreshed snapshot. The source repo does not already store this timestamp. Never use the browser clock as a fake refresh time.
+Body: `{"status": "IN_CONSULTATION", "expected_status": "WAITING"}`. Only WAITING → IN_CONSULTATION →
+DISCHARGED is allowed (also enforced by the `sql/03` trigger). Returns the updated appointment.
 
-## Map
+Errors: `STAFF_ONLY`, `OTHER_CLINIC` (another clinic's visit), `NOT_FOUND`, `STATUS_CONFLICT` (status changed
+since it was loaded), `INVALID_STATUS_TRANSITION`.
 
-`GET /nurses/nearby?latitude=&longitude=&limit=10` -> `{updated_at:ISO8601,items:[{nurse_id,nurse_name?,is_active,location:{type:"Point",coordinates:[lng,lat]},created_at:ISO8601,dist:{calculated:480}}]}`. `dist.calculated` is metres. Enforce 5,000 m radius and a bounded limit server-side, return sorted by distance, and do not accept arbitrary client pipelines/operators.
+## Audit trail
 
-To meet the accepted current-location semantics, select each nurse's latest ping across statuses and locations before treating it as active/nearby; don't retain an old inside-radius ping when a newer offline/outside-radius ping exists. Explicitly enforce the two-hour freshness bound because TTL deletion is asynchronous. Document this correction to the branch's nearest-ping grouping. API updated_at is response freshness, while each created_at is the actual ping time. The client polls while visible and labels retained results stale when a refresh fails.
+**`GET /me/audit`** – patients only (clinic staff get `403 PATIENT_ONLY`).
 
-## Reviews and catalog
+Query: `start_date`, `end_date` (inclusive, UTC; both optional), `page`, `page_size`.
 
-- `GET /reviews/insights` -> `{total_reviews:500,avg_rating:4.2,rating_distribution:[{rating:5,count:250}],frequent_tags:[{tag:"Friendly",count:330}]}`. Adapt the assigned $facet output names (`overall_summary`, `rating_distribution`, `frequent_tags`) and `_id` keys to this transport shape. Global PatientReviews, with `bedside_manner_tags`, has no guaranteed clinic_id. Do not pretend the selected clinic scopes these charts. Return missing rating buckets as zero; top tags remain bounded by the pipeline's ten-tag limit.
-- `GET /catalogs?q=&specialty=&page=&page_size=1` -> paged full MedicalCatalogs document, `id` equal to stringified Mongo _id, specialty, availability_slots, medication_details and arbitrary extra JSON-compatible fields. Serialise BSON dates/ObjectId safely and cap response size/depth. One document is fetched per page; `q` searches specialty text and `specialty` filters by exact specialty. `GET /catalogs/specialties` -> `{items:[{specialty,count}]}` for the specialty chips. No catalog edit endpoint is needed.
+```json
+{
+  "items": [{"id": 100001, "patient_id": 1, "amount_changed": "250.00", "action_type": "DEBIT",
+             "balance_after": "1081.43", "timestamp": "2026-10-15T16:17:02+00:00"}],
+  "total": 48, "pages": 5, "page": 1, "page_size": 10,
+  "current_balance": "1081.43",
+  "opening_balance": "1188.09",
+  "has_active_appointment": true,
+  "latest_entry_date": "2026-10-15"
+}
+```
 
-## Safe failures
+Entries are newest first. `opening_balance` is the balance before the first entry of the whole period
+(not just the page); `current_balance` is always the latest balance; `latest_entry_date` is the
+patient's newest entry regardless of the filter (the screen uses it when the last 30 days are empty).
+Errors: `INVALID_DATE_RANGE`, `PATIENT_ONLY`.
 
-Non-2xx responses use `{code: "INSUFFICIENT_HSA_BALANCE"}` or another safe public code. The client intentionally ignores arbitrary server message strings. Supported codes include ACTIVE_VISIT_EXISTS, CLINIC_NOT_ACCEPTING, INVALID_COPAY, STATUS_CONFLICT, INVALID_STATUS_TRANSITION, CSRF_FAILED, SESSION_EXPIRED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, REFRESH_IN_PROGRESS and REQUEST_KEY_CONFLICT. Never return SQL text, stack traces, secrets or another patient's details. Unexpected/network/5xx booking errors remain uncertain; the client retries the original details with the original key rather than claiming an unverified rollback.
+## Workflow 2 – analytics
 
-## MongoDB setup and command failures
+| Method & path | Input | Output |
+|---|---|---|
+| `GET /analytics/revenue` | `clinic_id` (required), `start_date`, `end_date` (default: last 30 days; not after today) | `{items:[{transaction_date, daily_total, moving_avg_7d}], total_copay_revenue, start_date, end_date}` |
+| `GET /analytics/ranking` | `date` (default today; not after today), `page`, `page_size` | Paged `{clinic_id, clinic_name, transaction_date, daily_total, moving_avg_7d, rank_by_revenue}` |
+| `GET /analytics/coverage` | `clinic_id` (optional) | `{earliest_date, latest_date, clinic_earliest_date, clinic_latest_date, today}` – first/last dates with discharged revenue (`null` when none) |
+| `GET /analytics/monthly` | `clinic_id`, `month=YYYY-MM-01` | `{total_discharges, last_refreshed_at}` from `mv_clinic_monthly_discharges` |
+| `POST /analytics/monthly/refresh` | – (CSRF header) | `{last_refreshed_at}` – **clinic staff only** |
 
-Runtime reads use the `careconnect_a2` database. Schema repair is an administrator command from
-root `mongo/setup.py`; normal API requests never install schema. MongoDB operation errors now
-return `MONGO_SETUP_INCOMPLETE`, `MONGO_PERMISSION_DENIED`, `MONGO_AUTH_FAILED`, or
-`MONGO_VERSION_UNSUPPORTED` with 503; other command failures return `MONGO_QUERY_FAILED` with
-500. Connectivity returns `MONGO_UNAVAILABLE` (503); execution/network timeouts remain
-`DATABASE_TIMEOUT` (503). Raw driver/server messages are not returned in JSON.
+- Revenue and ranking run the Part A query (`sql/08_analytics_history.sql`, the all-dates form of
+  `sql/06`): DISCHARGED appointments only, a 7-calendar-day `RANGE` window per clinic and `DENSE_RANK()`
+  per date. The date filter is applied after the window, so the first days keep their 6-day lookback.
+  `total_copay_revenue` is the sum of the daily totals shown.
+- The screen calls `coverage` first and opens on the latest recorded dates, so an older database is not
+  shown as empty.
+- `refresh` runs `refresh_clinic_monthly_discharges()` (`REFRESH MATERIALIZED VIEW CONCURRENTLY`) and stores
+  the time in `api_refresh_metadata`.
 
+Errors: `INVALID_DATE_RANGE`, `DATE_OUTSIDE_WINDOW` (future date), `INVALID_MONTH`, `NOT_FOUND` (clinic),
+`STAFF_ONLY`, `REFRESH_IN_PROGRESS`.
 
-## UI defaults and Indian demo locations
+## Workflow 3 – nearest nurses (Map)
 
-Map obtains the current device coordinates through browser geolocation (permission required,
-HTTPS or localhost), then passes the returned origin to the existing nearby endpoint. Permission
-failure does not silently display a clinic as the user's location. Manual origin and an explicitly
-selected clinic remain available. The endpoint reads only NursePings and accepts active/name as
-aliases for is_active/nurse_name; canonical fields take precedence.
+**`GET /nurses/nearby`** – `latitude` (−90…90), `longitude` (−180…180), `limit` (1–50, the screen uses 10).
 
-Audit initializes explicit start_date/end_date for the last 30 UTC calendar dates including today.
-Only applied ranges are saved, separately per patient in per-tab sessionStorage. Returning to the
-screen or reloading restores the range. Reset restores 30 days. The latest current_balance is not
-a historical closing balance. Analytics also initializes a populated explicit 30-calendar-date range;
-the selected-period revenue card sums the exact displayed daily revenue rows.
+```json
+{
+  "updated_at": "2026-10-15T16:18:10+00:00",
+  "items": [{"nurse_id": 42, "nurse_name": "Nitesh Sani", "is_active": true,
+             "location": {"type": "Point", "coordinates": [78.3441, 17.4537]},
+             "created_at": "2026-10-15T16:12:00+00:00", "dist": {"calculated": 190.4}}]
+}
+```
 
-Generation is constrained to 20 km inland service circles around Hyderabad and selected cities
-in Telangana, Andhra Pradesh, Karnataka and Maharashtra. Geographic defaults, clinic seeds,
-nurse homes, movements and emitted ping checks share data_generation/india_geography.py.
-No database objects or endpoints are added for this geography or UI state.
+`$geoNear` on the `NursePings` 2dsphere index with a fixed 5,000 m radius, then each nurse's **latest**
+ping is kept only if it is active and less than two hours old. Sorted by distance (`dist.calculated`,
+metres). Coordinates are GeoJSON `[longitude, latitude]`.
+
+## Workflow 4 – reviews and catalog
+
+| Method & path | Input | Output |
+|---|---|---|
+| `GET /reviews/insights` | – | `{total_reviews, avg_rating, rating_distribution:[{rating, count}] (1–5, missing = 0), frequent_tags:[{tag, count}] (top 10)}` from one `$facet` pipeline |
+| `GET /catalogs/specialties` | – | `{items:[{specialty, count}]}` for the specialty chips |
+| `GET /catalogs` | `specialty` (exact), `q` (specialty text), `page`, `page_size` (1–5, default 1) | Paged MedicalCatalogs documents: `id` (string `_id`), `specialty`, `physician`, `availability_slots`, `medication_details` and any extra fields |
+
+Reviews have no clinic ID, so the charts are global. Catalog documents larger than 256 KB return
+`413 DOCUMENT_TOO_LARGE`.
+
+## Error codes
+
+| HTTP | Codes |
+|---|---|
+| 400 / 422 | `VALIDATION_ERROR`, `INVALID_COPAY`, `INVALID_DATE_RANGE`, `DATE_OUTSIDE_WINDOW`, `INVALID_MONTH` |
+| 401 | `SESSION_EXPIRED` |
+| 403 | `CSRF_FAILED`, `PATIENT_ONLY`, `STAFF_ONLY`, `OTHER_CLINIC`, `OWN_RECORD_ONLY`, `NO_PATIENT_SELECTED`, `DEMO_MODE_OFF` |
+| 404 | `NOT_FOUND`, `CLINIC_NOT_FOUND` |
+| 409 | `INSUFFICIENT_HSA_BALANCE`, `ACTIVE_VISIT_EXISTS`, `CLINIC_NOT_ACCEPTING`, `STATUS_CONFLICT`, `INVALID_STATUS_TRANSITION`, `REQUEST_KEY_CONFLICT`, `REFRESH_IN_PROGRESS` |
+| 413 | `DOCUMENT_TOO_LARGE`, oversized request body (`VALIDATION_ERROR`) |
+| 500 | `DATABASE_ERROR`, `DATABASE_SETUP_INCOMPLETE`, `MONGO_QUERY_FAILED`, `INTERNAL_ERROR` |
+| 503 | `POSTGRES_UNAVAILABLE`, `MONGO_UNAVAILABLE`, `DATABASE_TIMEOUT`, `MONGO_SETUP_INCOMPLETE`, `MONGO_AUTH_FAILED`, `MONGO_PERMISSION_DENIED`, `MONGO_VERSION_UNSUPPORTED` |
+
+The frontend (`web/src/service/api.js`) turns each code into a readable message.

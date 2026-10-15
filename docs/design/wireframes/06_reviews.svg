@@ -1,183 +1,131 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="1440" height="1410" viewBox="0 0 1440 1410" role="img" aria-labelledby="title desc">
-<title id="title">CareConnect - Reviews</title><desc id="desc">One of exactly six screen designs. All shown names, records, amounts and chart values are illustrative layout data. Reference style: white header, teal navigation, pale background and rounded cards.</desc>
-<rect x="0" y="0" width="1440" height="1410" rx="0" fill="#F3F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="0" y="0" width="1440" height="104" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
-<line x1="0" y1="104" x2="1440" y2="104" stroke="#D8E5E3" stroke-width="1"/>
-<rect x="36" y="31" width="44" height="44" rx="12" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<g transform="translate(46,41) scale(1.0)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 12 4 V 20 M 4 12 H 20"/></g>
-<text x="94" y="61" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="700" fill="#173C3A" text-anchor="start">CareConnect</text>
-<text x="746" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Acting as (demo)</text>
-<rect x="746" y="32" width="296" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="761" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Patient: Asha Rao (10482)</text>
-<g transform="translate(1010,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 7 10 L 12 15 L 17 10"/></g>
-<text x="1062" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Selected clinic</text>
-<rect x="1062" y="32" width="330" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="1077" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Lakeview Family Clinic (217)</text>
-<g transform="translate(1360,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 7 10 L 12 15 L 17 10"/></g>
-<rect x="0" y="105" width="1440" height="63" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
-<line x1="0" y1="168" x2="1440" y2="168" stroke="#D8E5E3" stroke-width="1"/>
-<text x="49" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Browse</text>
-<text x="149" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Transaction</text>
-<text x="306" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Audit trail</text>
-<text x="451" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Analytics</text>
-<text x="579" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Map</text>
-<text x="664" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="start">Reviews</text>
-<line x1="651" y1="166" x2="760" y2="166" stroke="#117C76" stroke-width="3"/>
-<text x="88" y="237" font-family="Arial, DejaVu Sans, sans-serif" font-size="34" font-weight="700" fill="#173C3A" text-anchor="start">Reviews and medical catalog</text>
-<text x="88" y="272" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#607B79" text-anchor="start">Global patient feedback and flexible medical references, together on one screen.</text>
-<rect x="88" y="318" width="1264" height="143" rx="14" fill="#E1F3F0" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="355" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="start">Overall average rating</text>
-<text x="112" y="411" font-family="Arial, DejaVu Sans, sans-serif" font-size="41" font-weight="700" fill="#173C3A" text-anchor="start">4.20</text>
-<text x="219" y="410" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="400" fill="#607B79" text-anchor="start">/ 5</text>
-<text x="453" y="354" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="start">Review count</text>
-<text x="453" y="410" font-family="Arial, DejaVu Sans, sans-serif" font-size="36" font-weight="700" fill="#173C3A" text-anchor="start">500</text>
-<text x="851" y="355" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="start">Scope</text>
-<text x="851" y="395" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">All PatientReviews</text>
-<text x="851" y="429" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Ratings and tags are aggregated together.</text>
-<rect x="88" y="488" width="620" height="364" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="533" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Rating distribution</text>
-<text x="112" y="562" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Number of reviews per rating</text>
-<text x="112" y="612" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">5 stars</text>
-<rect x="194" y="594" width="416" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="194" y="594" width="416.0" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="672" y="612" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">250</text>
-<text x="112" y="657" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">4 stars</text>
-<rect x="194" y="639" width="416" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="194" y="639" width="249.6" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="672" y="657" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">150</text>
-<text x="112" y="702" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">3 stars</text>
-<rect x="194" y="684" width="416" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="194" y="684" width="108.16" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="672" y="702" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">65</text>
-<text x="112" y="747" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">2 stars</text>
-<rect x="194" y="729" width="416" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="194" y="729" width="33.28" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="672" y="747" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">20</text>
-<text x="112" y="792" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">1 stars</text>
-<rect x="194" y="774" width="416" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="194" y="774" width="24.96" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="672" y="792" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">15</text>
-<rect x="732" y="488" width="620" height="364" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="756" y="533" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Top bedside-manner tags</text>
-<text x="756" y="562" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">A review can contain more than one tag.</text>
-<text x="756" y="612" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Friendly</text>
-<rect x="896" y="594" width="350" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="896" y="594" width="350.0" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="1316" y="612" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">330</text>
-<text x="756" y="657" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Professional</text>
-<rect x="896" y="639" width="350" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="896" y="639" width="296.969696969697" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="1316" y="657" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">280</text>
-<text x="756" y="702" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Attentive</text>
-<rect x="896" y="684" width="350" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="896" y="684" width="254.54545454545453" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="1316" y="702" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">240</text>
-<text x="756" y="747" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Empathetic</text>
-<rect x="896" y="729" width="350" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="896" y="729" width="201.5151515151515" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="1316" y="747" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">190</text>
-<text x="756" y="792" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Punctual</text>
-<rect x="896" y="774" width="350" height="22" rx="5" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="896" y="774" width="169.6969696969697" height="22" rx="5" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="1316" y="792" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="end">160</text>
-<rect x="88" y="879" width="1264" height="433" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="923" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">Medical catalog</text>
-<text x="112" y="954" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Reference documents · display only</text>
-<text x="112" y="988" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Search specialty</text>
-<rect x="112" y="998" width="286" height="48" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="127" y="1031" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">General Practice</text>
-<text x="420" y="988" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Selected document</text>
-<rect x="420" y="998" width="414" height="48" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="435" y="1031" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">General Practice · document 01</text>
-<g transform="translate(802,1013) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 7 10 L 12 15 L 17 10"/></g>
-<text x="857" y="1007" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Document ID</text>
-<text x="857" y="1037" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#173C3A" text-anchor="start">68ead5108b523b67289a0041</text>
-<line x1="112" y1="1069" x2="1328" y2="1069" stroke="#D8E5E3" stroke-width="1"/>
-<text x="112" y="1104" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#173C3A" text-anchor="start">Availability slots</text>
-<rect x="112" y="1122" width="589" height="112" rx="8" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<text x="127" y="1148" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#607B79" text-anchor="start">Day</text>
-<text x="311" y="1148" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#607B79" text-anchor="start">Start</text>
-<text x="495" y="1148" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#607B79" text-anchor="start">End</text>
-<text x="127" y="1178" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Mon</text>
-<text x="311" y="1178" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">09:00</text>
-<text x="495" y="1178" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">16:00</text>
-<text x="127" y="1213" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">Thu</text>
-<text x="311" y="1213" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">10:00</text>
-<text x="495" y="1213" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">18:00</text>
-<text x="743" y="1104" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="600" fill="#173C3A" text-anchor="start">Medication details</text>
-<text x="743" y="1141" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Name</text>
-<text x="743" y="1170" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">Paracetamol</text>
-<text x="1001" y="1141" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Strength</text>
-<text x="1001" y="1170" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">500 mg</text>
-<text x="1197" y="1141" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Route</text>
-<text x="1197" y="1170" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#173C3A" text-anchor="start">oral</text>
-<text x="743" y="1222" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#117C76" text-anchor="start">Additional fields</text>
-<g transform="translate(1277,1206) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 7 10 L 12 15 L 17 10"/></g>
-<text x="743" y="1256" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="start">Unknown nested fields expand here, as readable text.</text>
-<text x="112" y="1288" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="start">Document 1 of 40 · read-only reference; not a prescription</text>
-<rect x="1100" y="1261" width="104" height="34" rx="9" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
-<text x="1152.0" y="1284.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="middle">Previous</text>
-<rect x="1224" y="1261" width="104" height="34" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
-<text x="1276.0" y="1284.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Next</text>
-<g id="state-loading" inkscape:groupmode="layer" inkscape:label="Reviews / loading" style="display:none">
-<rect x="88" y="318" width="1264" height="534" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="116" y="364" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#173C3A" text-anchor="start">Loading records…</text>
-<rect x="116" y="402" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="130" y="414" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
-<rect x="116" y="466" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="130" y="478" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
-<rect x="116" y="530" width="1208" height="42" rx="7" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
-<rect x="130" y="542" width="240" height="16" rx="4" fill="#D8E5E3" stroke="none" stroke-width="1.1"/>
-<text x="116" y="643" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Please wait. Existing inputs remain available.</text>
-</g>
-<g id="state-empty" inkscape:groupmode="layer" inkscape:label="Reviews / empty" style="display:none">
-<rect x="88" y="318" width="1264" height="534" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<circle cx="147" cy="404" r="23" fill="#E1F3F0" stroke="none" stroke-width="1"/>
-<g transform="translate(136,393) scale(0.9166666666666666)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<circle cx="10" cy="10" r="7"/>
-<path d="M 16 16 L 22 22"/></g>
-<text x="190" y="402" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">No reviews available</text>
-<text x="190" y="437" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Rating distribution, average and tags will appear when reviews exist.</text>
-<rect x="190" y="478" width="192" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
-<text x="286.0" y="508.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Refresh</text>
-</g>
-<g id="state-error" inkscape:groupmode="layer" inkscape:label="Reviews / error" style="display:none">
-<rect x="88" y="318" width="1264" height="534" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<rect x="112" y="344" width="1216" height="98" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
-<g transform="translate(132,378) scale(1.0416666666666667)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
-<text x="171" y="383" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#A82E2E" text-anchor="start">We could not load this data</text>
-<text x="171" y="416" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#A82E2E" text-anchor="start">Retry shortly. Your current selection has been kept.</text>
-<rect x="116" y="481" width="188" height="48" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="210.0" y="511.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Retry</text>
-</g>
-<g id="catalog-loading" inkscape:groupmode="layer" inkscape:label="Reviews / catalog loading" style="display:none">
-<rect x="88" y="879" width="1264" height="433" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="923" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">Medical catalog</text>
-<text x="112" y="989" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Loading catalog documents…</text>
-<text x="112" y="1025" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Review insights above remain available.</text>
-</g>
-<g id="catalog-empty" inkscape:groupmode="layer" inkscape:label="Reviews / catalog empty" style="display:none">
-<rect x="88" y="879" width="1264" height="433" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="923" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">Medical catalog</text>
-<text x="112" y="989" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">No catalog documents match this search</text>
-<text x="112" y="1025" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Review insights above remain available.</text>
-<rect x="112" y="1082" width="186" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
-<text x="205.0" y="1112.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Clear search</text>
-</g>
-<g id="catalog-error" inkscape:groupmode="layer" inkscape:label="Reviews / catalog error" style="display:none">
-<rect x="88" y="879" width="1264" height="433" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
-<text x="112" y="923" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">Medical catalog</text>
-<text x="112" y="989" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#A82E2E" text-anchor="start">We could not load the medical catalog</text>
-<text x="112" y="1025" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Review insights above remain available.</text>
-<rect x="112" y="1082" width="186" height="48" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
-<text x="205.0" y="1112.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Retry</text>
-</g>
-<text x="88" y="1367" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="start">Illustrative layout values only. Amounts are HSA account units; the schema specifies no currency.</text>
-<text x="1352" y="1367" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="end">06 / 06</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" font-family="Inter, Arial, sans-serif" role="img" aria-label="CareConnect wireframe - Reviews and medical catalog">
+<title>CareConnect wireframe - Reviews and medical catalog</title>
+<rect width="1600" height="1000" fill="#f7f7f7"/>
+<rect x="20" y="20" width="1180" height="960" rx="12" fill="#ffffff" stroke="#7a7a7a" stroke-width="2"/>
+<path d="M48 62c0-10 12-14 18-6 6-8 18-4 18 6 0 10-18 20-18 20s-18-10-18-20z" fill="#117C76"/>
+<text x="96" y="74" font-size="22" font-weight="bold" fill="#2b2b2b" text-anchor="start">CareConnect</text>
+<text x="640" y="52" font-size="11" font-weight="normal" fill="#6b6b6b" text-anchor="start">Acting as (demo)</text>
+<rect x="640" y="58" width="250" height="34" rx="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="650" y="80" font-size="13" font-weight="normal" fill="#2b2b2b" text-anchor="start">Patient: &lt;name&gt;  ▾</text>
+<text x="910" y="52" font-size="11" font-weight="normal" fill="#6b6b6b" text-anchor="start">Selected clinic</text>
+<rect x="910" y="58" width="260" height="34" rx="6" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="920" y="80" font-size="13" font-weight="normal" fill="#2b2b2b" text-anchor="start">&lt;clinic name&gt; (id)  ▾</text>
+<line x1="20" y1="112" x2="1200" y2="112" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="44" y="146" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Browse</text>
+<text x="140" y="146" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Transaction</text>
+<text x="276" y="146" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Audit trail</text>
+<text x="412" y="146" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Analytics</text>
+<text x="532" y="146" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Map</text>
+<text x="604" y="146" font-size="14" font-weight="bold" fill="#117C76" text-anchor="start">Reviews</text>
+<line x1="598" y1="164" x2="674" y2="164" stroke="#117C76" stroke-width="3"/>
+<line x1="20" y1="166" x2="1200" y2="166" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="44" y="214" font-size="28" font-weight="bold" fill="#2b2b2b" text-anchor="start">Reviews and medical catalog</text>
+<text x="44" y="240" font-size="14" font-weight="normal" fill="#6b6b6b" text-anchor="start">Global feedback and flexible references on one screen.</text>
+<text x="44" y="966" font-size="11" font-weight="normal" fill="#6b6b6b" text-anchor="start">Footer: Amounts use HSA account units. Dates and times are shown in UTC.</text>
+<text x="1240" y="60" font-size="20" font-weight="bold" fill="#2b2b2b" text-anchor="start">Reviews and medical catalog</text>
+<text x="1240" y="84" font-size="13" font-weight="normal" fill="#6b6b6b" text-anchor="start">Interactions and states</text>
+<line x1="1240" y1="98" x2="1570" y2="98" stroke="#9a9a9a" stroke-width="1.5"/>
+<rect x="44" y="262" width="1132" height="84" rx="8" fill="#ececec" stroke="none" stroke-width="1.5"/>
+<text x="68" y="292" font-size="12" font-weight="bold" fill="#6b6b6b" text-anchor="start">Overall average rating</text>
+<text x="68" y="328" font-size="22" font-weight="bold" fill="#2b2b2b" text-anchor="start">3.78 / 5 ★★★★☆</text>
+<text x="520" y="292" font-size="12" font-weight="bold" fill="#6b6b6b" text-anchor="start">Satisfied patients</text>
+<text x="520" y="328" font-size="22" font-weight="bold" fill="#2b2b2b" text-anchor="start">66%  rated 4–5 stars</text>
+<text x="1150" y="292" font-size="12" font-weight="bold" fill="#6b6b6b" text-anchor="end">Reviews</text>
+<text x="1150" y="328" font-size="15" font-weight="bold" fill="#2b2b2b" text-anchor="end">Based on 5,000 reviews</text>
+<rect x="44" y="362" width="558" height="210" rx="8" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="68" y="394" font-size="16" font-weight="bold" fill="#2b2b2b" text-anchor="start">Rating distribution</text>
+<text x="68" y="426" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">1 star</text>
+<rect x="154" y="414" width="330.0" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="578" y="426" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="68" y="456" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">2 star</text>
+<rect x="154" y="444" width="340.0" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="578" y="456" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="68" y="486" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">3 star</text>
+<rect x="154" y="474" width="350.0" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="578" y="486" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="68" y="516" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">4 star</text>
+<rect x="154" y="504" width="360.0" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="578" y="516" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="68" y="546" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">5 star</text>
+<rect x="154" y="534" width="370.0" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="578" y="546" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<rect x="618" y="362" width="558" height="210" rx="8" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="642" y="394" font-size="16" font-weight="bold" fill="#2b2b2b" text-anchor="start">Top bedside-manner tags</text>
+<text x="642" y="426" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">&lt;tag&gt;</text>
+<rect x="728" y="414" width="330" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="1152" y="426" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="642" y="456" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">&lt;tag&gt;</text>
+<rect x="728" y="444" width="305" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="1152" y="456" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="642" y="486" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">&lt;tag&gt;</text>
+<rect x="728" y="474" width="280" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="1152" y="486" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="642" y="516" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">&lt;tag&gt;</text>
+<rect x="728" y="504" width="255" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="1152" y="516" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<text x="642" y="546" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">&lt;tag&gt;</text>
+<rect x="728" y="534" width="230" height="12" rx="6" fill="#117C76" stroke="none" stroke-width="1.5"/>
+<text x="1152" y="546" font-size="12" font-weight="normal" fill="#2b2b2b" text-anchor="end">count · %</text>
+<rect x="44" y="588" width="1132" height="278" rx="8" fill="#ffffff" stroke="#9a9a9a" stroke-width="1.5"/>
+<text x="68" y="620" font-size="16" font-weight="bold" fill="#2b2b2b" text-anchor="start">Medical catalog</text>
+<rect x="210" y="604" width="94" height="24" rx="12" fill="#117C76" stroke="#117C76" stroke-width="1.5"/>
+<text x="257" y="621" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">All</text>
+<rect x="314" y="604" width="94" height="24" rx="12" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="361" y="621" font-size="11" font-weight="bold" fill="#117C76" text-anchor="middle">Cardiology</text>
+<rect x="418" y="604" width="94" height="24" rx="12" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="465" y="621" font-size="11" font-weight="bold" fill="#117C76" text-anchor="middle">Dermatology</text>
+<rect x="522" y="604" width="94" height="24" rx="12" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="569" y="621" font-size="11" font-weight="bold" fill="#117C76" text-anchor="middle">ENT</text>
+<rect x="626" y="604" width="94" height="24" rx="12" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="673" y="621" font-size="11" font-weight="bold" fill="#117C76" text-anchor="middle">…</text>
+<text x="1150" y="620" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="end">Read-only reference</text>
+<text x="68" y="656" font-size="16" font-weight="bold" fill="#2b2b2b" text-anchor="start">&lt;Specialty&gt; · Dr. &lt;physician&gt;</text>
+<rect x="68" y="672" width="520" height="140" rx="8" fill="#ececec" stroke="none" stroke-width="1.5"/>
+<text x="88" y="700" font-size="13" font-weight="bold" fill="#2b2b2b" text-anchor="start">Medication details</text>
+<rect x="88" y="716" width="446.5" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<rect x="88" y="742" width="390.09999999999997" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<rect x="88" y="768" width="333.7" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<rect x="604" y="672" width="548" height="140" rx="8" fill="#ececec" stroke="none" stroke-width="1.5"/>
+<text x="624" y="700" font-size="13" font-weight="bold" fill="#2b2b2b" text-anchor="start">Availability slots (Day / Start / End)</text>
+<rect x="624" y="716" width="475.0" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<rect x="624" y="742" width="415.0" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<rect x="624" y="768" width="355.0" height="10" rx="4" fill="#d2d2d2" stroke="none" stroke-width="1.5"/>
+<text x="68" y="846" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">Catalog entry 1 of 40 · Additional fields listed below</text>
+<rect x="980" y="828" width="80" height="36" rx="8" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="1020.0" y="851" font-size="13" font-weight="bold" fill="#117C76" text-anchor="middle">Previous</text>
+<rect x="1072" y="828" width="80" height="36" rx="8" fill="#ffffff" stroke="#117C76" stroke-width="1.5"/>
+<text x="1112.0" y="851" font-size="13" font-weight="bold" fill="#117C76" text-anchor="middle">Next</text>
+<circle cx="1166" cy="300" r="11" fill="#117C76" opacity="0.9"/>
+<text x="1166" y="304" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+<circle cx="1166" cy="390" r="11" fill="#117C76" opacity="0.9"/>
+<text x="1166" y="394" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+<circle cx="1166" cy="616" r="11" fill="#117C76" opacity="0.9"/>
+<text x="1166" y="620" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+<circle cx="1166" cy="700" r="11" fill="#117C76" opacity="0.9"/>
+<text x="1166" y="704" font-size="11" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+<circle cx="1252" cy="132" r="12" fill="#117C76"/>
+<text x="1252" y="137" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+<text x="1274" y="137" font-size="14" font-weight="bold" fill="#2b2b2b" text-anchor="start">Summary from $facet</text>
+<text x="1274" y="158" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">Average, share of 4–5 star reviews and total</text>
+<text x="1274" y="176" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">(PatientReviews has no clinic: global charts).</text>
+<circle cx="1252" cy="208" r="12" fill="#117C76"/>
+<text x="1252" y="213" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">2</text>
+<text x="1274" y="213" font-size="14" font-weight="bold" fill="#2b2b2b" text-anchor="start">Distribution and top tags</text>
+<text x="1274" y="234" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">Missing rating buckets shown as 0; up to</text>
+<text x="1274" y="252" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">ten most frequent bedside-manner tags.</text>
+<circle cx="1252" cy="284" r="12" fill="#117C76"/>
+<text x="1252" y="289" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">3</text>
+<text x="1274" y="289" font-size="14" font-weight="bold" fill="#2b2b2b" text-anchor="start">Specialty chips</text>
+<text x="1274" y="310" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">Filter MedicalCatalogs by exact specialty and</text>
+<text x="1274" y="328" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">reset paging to the first entry.</text>
+<circle cx="1252" cy="360" r="12" fill="#117C76"/>
+<text x="1252" y="365" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+<text x="1274" y="365" font-size="14" font-weight="bold" fill="#2b2b2b" text-anchor="start">Flexible documents</text>
+<text x="1274" y="386" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">One document per page; known fields get</text>
+<text x="1274" y="404" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">readable labels, any extra fields are listed.</text>
+<circle cx="1252" cy="436" r="12" fill="#117C76"/>
+<text x="1252" y="441" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">5</text>
+<text x="1274" y="441" font-size="14" font-weight="bold" fill="#2b2b2b" text-anchor="start">Fits the window</text>
+<text x="1274" y="462" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">No browser scrollbar; on phones the three parts</text>
+<text x="1274" y="480" font-size="12" font-weight="normal" fill="#6b6b6b" text-anchor="start">become tabs and long entries scroll inside.</text>
 </svg>
