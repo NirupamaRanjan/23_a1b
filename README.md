@@ -10,7 +10,7 @@ databases; the browser never talks to a database directly.
 | | |
 |---|---|
 | **Team repository** | `https://github.com/NirupamaRanjan/23_a1b` |
-| **Final commit hash** | `<FINAL_COMMIT_HASH>` |
+| **Final commit hash** | `4de590ec8fb44797ef921d190112392140b51ae4` |
 | **Demo video (≤ 5 min)** | `https://drive.google.com/file/d/1NopyPzG4QD9tq_GTgbCpfWoYvimI6M6z/view?usp=sharing` |
 
 **Contents:** [Repository structure](#repository-structure) · [The six screens](#the-six-screens) ·
