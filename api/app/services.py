@@ -154,6 +154,9 @@ class CareService:
         return result
 
     def audit(self, session, start, end, page, size):
+        # The HSA ledger is private to the patient; clinic staff never read it.
+        if session['role'] != 'patient':
+            raise PublicError('PATIENT_ONLY', 403)
         patient_id = session['patient_id']
         if not patient_id:
             raise PublicError('NO_PATIENT_SELECTED', 403)
@@ -193,7 +196,12 @@ class CareService:
             rows = cur.fetchall()
             cur.execute("SELECT EXISTS(SELECT 1 FROM appointments WHERE patient_id=%s AND status IN ('WAITING','IN_CONSULTATION')) AS active", (patient_id,))
             active = cur.fetchone()['active']
-        return page_result(rows,total,page,size,current_balance=current,opening_balance=opening,has_active_appointment=active)
+            # Newest ledger date (UTC) regardless of the filter, so the screen can offer the
+            # latest entries when a date range is empty (for example on older demo data).
+            cur.execute("SELECT (MAX(timestamp) AT TIME ZONE 'UTC')::date AS latest FROM wallet_audit_logs WHERE patient_id=%s", (patient_id,))
+            latest = cur.fetchone()['latest']
+        return page_result(rows,total,page,size,current_balance=current,opening_balance=opening,
+            has_active_appointment=active,latest_entry_date=latest)
 
 
 class AnalyticsService:
@@ -223,6 +231,26 @@ class AnalyticsService:
             total = sum((row['daily_total'] for row in rows), Decimal('0.00'))
         return transport({'items':rows,'total_copay_revenue':total,
             'start_date':start,'end_date':end})
+
+    def coverage(self, clinic_id=None):
+        """First and last UTC dates with DISCHARGED revenue, overall and for one clinic.
+
+        The screen opens on the latest recorded dates instead of an empty "last 30 days"
+        when the stored data is older (seeded demo data does not move forward by itself).
+        """
+        span = '''SELECT (MIN(created_at) AT TIME ZONE 'UTC')::date AS earliest,
+            (MAX(created_at) AT TIME ZONE 'UTC')::date AS latest
+            FROM appointments WHERE status='DISCHARGED' '''
+        with self.database.cursor(readonly=True) as cur:
+            cur.execute(span)
+            overall = cur.fetchone()
+            clinic = {'earliest': None, 'latest': None}
+            if clinic_id:
+                cur.execute(span + 'AND clinic_id=%s', (clinic_id,))
+                clinic = cur.fetchone()
+        return transport({'earliest_date': overall['earliest'], 'latest_date': overall['latest'],
+            'clinic_earliest_date': clinic['earliest'], 'clinic_latest_date': clinic['latest'],
+            'today': datetime.now(timezone.utc).date()})
 
     def ranking(self, day, page, size):
         if day > datetime.now(timezone.utc).date():

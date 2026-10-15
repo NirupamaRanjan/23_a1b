@@ -8,13 +8,23 @@ try:
 except ImportError:
     from india_geography import clinic_point
 
-CONN_PARAMS = {
-    "dbname": os.getenv("CARECONNECT_DB_NAME", "careconnect"),
-    "user": os.getenv("CARECONNECT_DB_USER", "postgres"),
-    "password": os.getenv("CARECONNECT_DB_PASSWORD"),
-    "host": os.getenv("CARECONNECT_DB_HOST", "localhost"),
-    "port": os.getenv("CARECONNECT_DB_PORT", "5432")
-}
+
+
+def connect():
+    """Same PostgreSQL as the API: the root .env (DATABASE_URL or PG*), unless the older
+    CARECONNECT_DB_* variables are set (bootstrap.py and earlier setups still pass those)."""
+    if os.getenv("CARECONNECT_DB_NAME"):
+        return psycopg2.connect(
+            dbname=os.getenv("CARECONNECT_DB_NAME"),
+            user=os.getenv("CARECONNECT_DB_USER", "postgres"),
+            password=os.getenv("CARECONNECT_DB_PASSWORD"),
+            host=os.getenv("CARECONNECT_DB_HOST", "localhost"),
+            port=os.getenv("CARECONNECT_DB_PORT", "5432"))
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "api"))
+    from app.config import Settings   # loads the root .env
+    return psycopg2.connect(Settings().database_url)
 
 # Optional: set CARECONNECT_SEED (e.g. 2026) to get the same names/data on every run.
 # Without it, every run generates new random data.
@@ -52,7 +62,7 @@ def seed():
         random.seed(int(SEED))
         Faker.seed(int(SEED))
 
-    conn = psycopg2.connect(**CONN_PARAMS)
+    conn = connect()
     cur = conn.cursor()
 
     print("Clearing old data...")

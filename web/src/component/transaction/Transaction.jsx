@@ -9,7 +9,7 @@ import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
 import { bookingKey, clearBookingKey } from '../../utils/bookingAttempt';
 import { centsOf, dateTime, money, parseCopay } from '../../utils/format';
-import { FieldValue, Heading, Panel, State, Title } from '../common/Ui';
+import { FieldValue, Heading, Panel, Restricted, State, Title } from '../common/Ui';
 const Transaction = () => {
     const { session, selectedClinic, updateBalance, refresh, loadSession } = useSession();
     const [copay, setCopay] = useState('');
@@ -21,7 +21,9 @@ const Transaction = () => {
     const alive = useRef(true);
     const attempt = useRef(null);
     const attemptDetails = useRef(null);
-    const wallet = useApi(API.audit, { page: 1, page_size: 1 }, !!session.patient);
+    const staff = session.actor.role !== 'patient';
+    // The wallet summary is the patient's own ledger, so it is never requested as clinic staff.
+    const wallet = useApi(API.audit, { page: 1, page_size: 1 }, !!session.patient && !staff);
     const displayClinic =
         uncertain && attemptDetails.current
             ? attemptDetails.current.clinic
@@ -46,15 +48,16 @@ const Transaction = () => {
         event.preventDefault();
         if (locked.current) return;
         // Report the specific problem rather than one combined message.
-        const problem = session.actor.role !== 'patient' || !session.patient
-            ? 'Only patients can book. Switch to a patient in the header first.'
-            : !displayClinic
-              ? 'Choose a clinic in Browse or in the header before booking.'
-              : !displayClinic.is_accepting_patients
-                ? 'This clinic is not accepting patients. Choose another clinic in Browse.'
-                : cents === null
-                  ? 'Enter a positive copay with no more than two decimal places.'
-                  : '';
+        const problem =
+            session.actor.role !== 'patient' || !session.patient
+                ? 'Only patients can book. Switch to a patient in the header first.'
+                : !displayClinic
+                  ? 'Choose a clinic in Browse or in the header before booking.'
+                  : !displayClinic.is_accepting_patients
+                    ? 'This clinic is not accepting patients. Choose another clinic in Browse.'
+                    : cents === null
+                      ? 'Enter a positive copay with no more than two decimal places.'
+                      : '';
         if (problem) {
             setError(problem);
             return;
@@ -99,12 +102,25 @@ const Transaction = () => {
         !!active ||
         wallet.loading ||
         !!wallet.error;
+    const heading = (
+        <Heading
+            title='Book an appointment'
+            subtitle='Confirm your clinic and copay. Your HSA charge and audit entry are saved together.'
+        />
+    );
+    if (staff)
+        return (
+            <>
+                {heading}
+                <Restricted
+                    title='Clinic staff cannot book appointments'
+                    message={`Booking charges a patient's HSA, so only patients can book. Switch to a patient under "Acting as" in the header, or manage your clinic's visits in Browse → Appointments.`}
+                />
+            </>
+        );
     return (
         <>
-            <Heading
-                title='Book an appointment'
-                subtitle='Confirm your clinic and copay. Your HSA charge and audit entry are saved together.'
-            />
+            {heading}
             <Box
                 sx={{
                     display: 'grid',
@@ -115,11 +131,6 @@ const Transaction = () => {
             >
                 <Panel component='form' onSubmit={submit}>
                     <Title>Booking details</Title>
-                    {session.actor.role !== 'patient' && (
-                        <Alert severity='info' sx={{ mb: 2 }}>
-                            Only patients can book. Switch to a patient in the header first.
-                        </Alert>
-                    )}
                     <Stack sx={{ gap: 3 }}>
                         <TextField
                             label='Patient'
@@ -297,7 +308,10 @@ const Transaction = () => {
                         </Panel>
                     ) : (
                         <Panel>
-                            <EmptyState title='Your next step in care' message='Your booking outcome and the exact new audit entry will appear here after you book.' />
+                            <EmptyState
+                                title='Your next step in care'
+                                message='Your booking outcome and the exact new audit entry will appear here after you book.'
+                            />
                         </Panel>
                     )}
                 </Box>

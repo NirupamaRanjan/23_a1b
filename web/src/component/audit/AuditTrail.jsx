@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -16,10 +16,17 @@ import {
 import { useSession } from '../../context/DataProvider';
 import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
-import { last30Days, loadAuditRange, saveAuditRange, validRange } from '../../utils/dateRange';
+import {
+    hasSavedAuditRange,
+    last30Days,
+    loadAuditRange,
+    saveAuditRange,
+    thirtyDaysEnding,
+    validRange,
+} from '../../utils/dateRange';
 import EmptyState from '../common/EmptyState';
 import { dateTime, money } from '../../utils/format';
-import { FieldValue, Heading, Pager, Panel, State, Title } from '../common/Ui';
+import { FieldValue, Heading, Pager, Panel, Restricted, State, Title } from '../common/Ui';
 const AuditTrail = () => {
     const { session } = useSession();
     const [range, setRange] = useState(() => loadAuditRange(session.patient?.id));
@@ -27,7 +34,29 @@ const AuditTrail = () => {
     const [to, setTo] = useState(range.end_date);
     const [page, setPage] = useState(1);
     const [validation, setValidation] = useState('');
-    const resource = useApi(API.audit, { ...range, page, page_size: 10 }, !!session.patient);
+    // true once the patient applied dates (now or earlier in this tab); then dates never move by themselves.
+    const [chosen, setChosen] = useState(() => hasSavedAuditRange(session.patient?.id));
+    const [shiftedTo, setShiftedTo] = useState('');
+    const staff = session.actor.role !== 'patient';
+    const resource = useApi(
+        API.audit,
+        { ...range, page, page_size: 10 },
+        !!session.patient && !staff
+    );
+    const latestEntry = resource.data?.latest_entry_date;
+    // Older demo data: when the default "last 30 days" is empty, open on the 30 days up to the
+    // patient's newest entry instead of an empty ledger.
+    useEffect(() => {
+        if (chosen || !resource.data || resource.data.total !== 0) return;
+        if (!latestEntry || latestEntry >= range.start_date) return;
+        const next = thirtyDaysEnding(latestEntry);
+        setRange(next);
+        setFrom(next.start_date);
+        setTo(next.end_date);
+        setPage(1);
+        setShiftedTo(latestEntry);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resource.data]);
     const apply = (event) => {
         event.preventDefault();
         if (!validRange({ start_date: from, end_date: to })) {
@@ -38,6 +67,8 @@ const AuditTrail = () => {
         const next = { start_date: from, end_date: to };
         setRange(next);
         saveAuditRange(session.patient.id, next);
+        setChosen(true);
+        setShiftedTo('');
         setPage(1);
     };
     const clear = () => {
@@ -46,16 +77,42 @@ const AuditTrail = () => {
         setTo(next.end_date);
         setRange(next);
         saveAuditRange(session.patient?.id, next);
+        setChosen(true);
+        setShiftedTo('');
+        setPage(1);
+        setValidation('');
+    };
+    const showLatest = () => {
+        const next = thirtyDaysEnding(latestEntry);
+        setFrom(next.start_date);
+        setTo(next.end_date);
+        setRange(next);
+        saveAuditRange(session.patient?.id, next);
+        setChosen(true);
+        setShiftedTo('');
         setPage(1);
         setValidation('');
     };
     const data = resource.data;
+    const heading = (
+        <Heading
+            title='Your HSA audit trail'
+            subtitle='Read-only activity and the running balance after every entry.'
+        />
+    );
+    if (staff)
+        return (
+            <>
+                {heading}
+                <Restricted
+                    title='Clinic staff cannot access the audit trail'
+                    message={`A patient's HSA ledger is private to that patient. Switch to a patient under "Acting as" in the header to see their entries.`}
+                />
+            </>
+        );
     return (
         <>
-            <Heading
-                title='Your HSA audit trail'
-                subtitle='Read-only activity and the running balance after every entry.'
-            />
+            {heading}
             <Stack
                 component='form'
                 onSubmit={apply}
@@ -95,13 +152,21 @@ const AuditTrail = () => {
                     Last 30 days
                 </Button>
             </Stack>
-            {session.patient && <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                Applied period (UTC): {range.start_date} to {range.end_date}.
-                {(from !== range.start_date || to !== range.end_date) && ' Date edits are not applied yet; choose Apply dates to update the results.'}
-            </Typography>}
+            {session.patient && (
+                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                    Applied period (UTC): {range.start_date} to {range.end_date}.
+                    {shiftedTo &&
+                        ` No entries in the last 30 days, so this shows the 30 days up to the latest entry on ${shiftedTo}.`}
+                    {(from !== range.start_date || to !== range.end_date) &&
+                        ' Date edits are not applied yet; choose Apply dates to update the results.'}
+                </Typography>
+            )}
             {!session.patient ? (
                 <Panel>
-                    <EmptyState title='Choose a patient' message='Select a patient in the header to view their wallet activity.' />
+                    <EmptyState
+                        title='Choose a patient'
+                        message='Select a patient in the header to view their wallet activity.'
+                    />
                 </Panel>
             ) : (
                 <>
@@ -166,7 +231,11 @@ const AuditTrail = () => {
                             empty={data?.items.length === 0}
                             emptyMessage='No wallet activity was recorded for this patient during the selected period.'
                             emptyTitle='No activity for these dates'
-                            emptyAction={{ label: 'Last 30 days', onClick: clear }}
+                            emptyAction={
+                                latestEntry && latestEntry < range.start_date
+                                    ? { label: 'Show latest entries', onClick: showLatest }
+                                    : { label: 'Last 30 days', onClick: clear }
+                            }
                         >
                             <Box sx={{ overflowX: 'auto' }}>
                                 <Table aria-label='HSA audit entries'>

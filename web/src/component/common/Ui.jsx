@@ -1,4 +1,5 @@
 import EmptyState from './EmptyState';
+import { useNavigate } from 'react-router-dom';
 import {
     Alert,
     Box,
@@ -79,6 +80,19 @@ export const Status = ({ value }) => (
         })}
     />
 );
+// Replaces a screen the current actor may not use (for example clinic staff on patient-only screens).
+export const Restricted = ({ title, message }) => {
+    const navigate = useNavigate();
+    return (
+        <Panel data-testid='restricted'>
+            <EmptyState
+                title={title}
+                message={message}
+                action={{ label: 'Go to Browse', onClick: () => navigate('/browse') }}
+            />
+        </Panel>
+    );
+};
 export const State = ({
     resource,
     empty = false,
@@ -112,7 +126,12 @@ export const State = ({
         );
     if (empty)
         return (
-            <EmptyState title={emptyTitle} message={emptyMessage} action={emptyAction} compact={compact} />
+            <EmptyState
+                title={emptyTitle}
+                message={emptyMessage}
+                action={emptyAction}
+                compact={compact}
+            />
         );
     return children;
 };
