@@ -3,7 +3,7 @@
 ## Inherited application
 
 This update starts from the user's latest uploaded CareConnect ZIP. PostgreSQL owns patients,
-clinics, appointments and wallet audit history; MongoDB medical_db owns nurse telemetry, review
+clinics, appointments and wallet audit history; MongoDB careconnect_a2 owns nurse telemetry, review
 facets and medical catalogs. The uploaded SQL session/retry/refresh support and nurse-directory
 implementation are retained. No new database tables, columns or collections were added by this
 update. Original SQL business rules, booking procedure, audit immutability and 5 km latest/active

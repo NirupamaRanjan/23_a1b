@@ -2,11 +2,11 @@ from app.config import Settings
 
 
 def test_settings_read_the_current_environment(monkeypatch):
-    monkeypatch.setenv('CARECONNECT_MONGO_DB','medical_db')
+    monkeypatch.setenv('CARECONNECT_MONGO_DB','careconnect_a2')
     monkeypatch.setenv('CARECONNECT_DEMO_MODE','true')
     monkeypatch.setenv('CARECONNECT_ALLOWED_ORIGINS','http://localhost:5173, http://127.0.0.1:5173 ,')
     settings = Settings()
-    assert settings.mongo_db == 'medical_db'
+    assert settings.mongo_db == 'careconnect_a2'
     assert settings.demo_mode is True
     assert settings.allowed_origins == ('http://localhost:5173','http://127.0.0.1:5173')
 
@@ -29,15 +29,15 @@ def test_explicit_database_url_has_priority(monkeypatch):
     assert Settings().database_url == 'postgresql://example@localhost:5432/existing'
 
 
-def test_mongo_database_defaults_to_medical_db(monkeypatch):
+def test_mongo_database_defaults_to_careconnect_a2(monkeypatch):
     monkeypatch.delenv('CARECONNECT_MONGO_DB', raising=False)
-    assert Settings().mongo_db == 'medical_db'
+    assert Settings().mongo_db == 'careconnect_a2'
 
 
 def test_an_old_mongo_database_setting_is_rejected(monkeypatch):
     import pytest
     monkeypatch.setenv('CARECONNECT_MONGO_DB', 'careconnect')
-    with pytest.raises(ValueError, match='medical_db'):
+    with pytest.raises(ValueError, match='careconnect_a2'):
         Settings()
 
 

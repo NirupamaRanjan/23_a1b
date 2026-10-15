@@ -21,7 +21,7 @@ def database():
     if not urlparse(url).path.endswith('_test'):
         raise RuntimeError('Integration tests refuse to reset a database not ending in _test')
     settings=Settings(database_url=url,mongo_uri=os.getenv('CARECONNECT_TEST_MONGO_URI','mongodb://localhost:27017/'),
-        mongo_db='medical_db_test',demo_mode=True)
+        mongo_db='careconnect_a2_test',demo_mode=True)
     with psycopg2.connect(url) as connection:
         with connection.cursor() as cur:
             cur.execute("SELECT to_regclass('patients')")

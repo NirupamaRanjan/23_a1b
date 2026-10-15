@@ -10,13 +10,13 @@ Handover and verification notes: [docs/handover_note.md](docs/handover_note.md).
 
 ## MongoDB database and setup (current release)
 
-**The application uses the MongoDB database `medical_db`.** Within it, `Nurses`, `NursePings`,
+**The application uses the MongoDB database `careconnect_a2`.** Within it, `Nurses`, `NursePings`,
 `PatientReviews` and `MedicalCatalogs` are separate collections. This does not rename PostgreSQL.
 Edit your existing active root `.env` (or legacy `api/.env`) to set:
 
 ```dotenv
 CARECONNECT_MONGO_URI=mongodb://localhost:27017/
-CARECONNECT_MONGO_DB=medical_db
+CARECONNECT_MONGO_DB=careconnect_a2
 ```
 
 Retain your actual URI/credentials if different. A conflicting exported `CARECONNECT_MONGO_DB`
@@ -24,7 +24,7 @@ takes precedence over `.env`; remove it in PowerShell with
 `Remove-Item Env:CARECONNECT_MONGO_DB -ErrorAction SilentlyContinue` before launching again.
 Other runtime MongoDB database names are rejected with an explicit configuration error.
 No existing database is renamed, copied or deleted automatically. If your records currently live
-in a different database, import the desired records into `medical_db` before normal use.
+in a different database, import the desired records into `careconnect_a2` before normal use.
 
 With the Python environment ready, run from the project root:
 

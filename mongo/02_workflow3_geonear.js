@@ -1,7 +1,7 @@
-// Database name: CARECONNECT_MONGO_DB if set, otherwise "medical_db".
-if (process.env.CARECONNECT_MONGO_DB && process.env.CARECONNECT_MONGO_DB !== 'medical_db')
-  throw new Error('Set CARECONNECT_MONGO_DB=medical_db.');
-db = db.getSiblingDB('medical_db');
+// Database name: CARECONNECT_MONGO_DB if set, otherwise "careconnect_a2".
+if (process.env.CARECONNECT_MONGO_DB && process.env.CARECONNECT_MONGO_DB !== 'careconnect_a2')
+  throw new Error('Set CARECONNECT_MONGO_DB=careconnect_a2.');
+db = db.getSiblingDB('careconnect_a2');
 
 // Workflow 3: nearest active mobile nurses within 5 km of a point.
 // The parameters are overridable from the environment so an API can reuse the same pipeline.

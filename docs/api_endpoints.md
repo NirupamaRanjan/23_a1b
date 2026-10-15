@@ -86,7 +86,7 @@ Non-2xx responses use `{code: "INSUFFICIENT_HSA_BALANCE"}` or another safe publi
 
 ## MongoDB setup and command failures
 
-Runtime reads use the `medical_db` database. Schema repair is an administrator command from
+Runtime reads use the `careconnect_a2` database. Schema repair is an administrator command from
 root `mongo/setup.py`; normal API requests never install schema. MongoDB operation errors now
 return `MONGO_SETUP_INCOMPLETE`, `MONGO_PERMISSION_DENIED`, `MONGO_AUTH_FAILED`, or
 `MONGO_VERSION_UNSUPPORTED` with 503; other command failures return `MONGO_QUERY_FAILED` with
