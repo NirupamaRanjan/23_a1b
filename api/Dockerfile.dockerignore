@@ -1,5 +1,5 @@
 # Used by api/Dockerfile (build context = repository root).
-**/.env
+**/.env*
 **/.venv
 **/node_modules
 **/__pycache__
@@ -12,3 +12,6 @@ docs
 performance
 api/tests
 api/docs
+
+scripts
+.github

@@ -10,7 +10,7 @@ This contract is implemented by the FastAPI server in `api/app/`. The inherited 
 {
   "actor": {"role":"patient","id":10482,"name":"Asha Rao"},
   "patient": {"id":10482,"name":"Asha Rao","hsa_balance":"5000.00"},
-  "clinic": {"id":217,"name":"Lakeview Family Clinic","latitude":40.748817,"longitude":-73.985130,"is_accepting_patients":true},
+  "clinic": {"id":217,"name":"Lakeview Family Clinic","latitude":17.445376,"longitude":78.346144,"is_accepting_patients":true},
   "csrf_token":"SESSION_BOUND_RANDOM_TOKEN",
   "demo_mode":false
 }
@@ -63,22 +63,51 @@ The procedure currently returns no generated IDs. Capture the exact appointment/
 
 ## Analytics
 
-- `GET /analytics/revenue?clinic_id=&start_date=&end_date=` -> `{items:[{transaction_date,daily_total,moving_avg_7d}],total_copay_revenue:"61500.00"}`. Preserve the assigned DISCHARGED-only RANGE-window query; do not silently change it to zero-filled days. Its source is recent 30-day revenue. Bound requested dates; compute enough lookback before filtering the visible interval. The total_copay_revenue field is the selected clinic's realised 30-day daily-total sum, independent of display bounds, not a materialized-view revenue column.
+- `GET /analytics/revenue?clinic_id=&start_date=&end_date=` -> `{items:[{transaction_date,daily_total,moving_avg_7d}],total_copay_revenue:"61500.00"}`. Preserve the assigned DISCHARGED-only RANGE-window query; do not silently change it to zero-filled days. The initial view covers the last 30 UTC calendar dates, but any historical range through today is allowed. The API reads sql/08_analytics_history.sql, retaining the seven-day lookback before filtering the visible interval. total_copay_revenue is the sum of the selected clinic's daily totals within the selected dates. The response also includes the effective start_date/end_date. The original assigned 30-day SQL 06 query remains available unchanged for direct reference.
 - `GET /analytics/ranking?date=&page=&page_size=` -> paged `{clinic_id,clinic_name,transaction_date,moving_avg_7d,rank_by_revenue}`. Preserve DENSE_RANK partition by transaction_date, ordered by moving_avg_7d. The default UI date is today; an empty date is an honest empty state.
 - `GET /analytics/monthly?clinic_id=&month=YYYY-MM-01` -> `{total_discharges:214,last_refreshed_at:ISO8601|null}` for the supplied monthly discharge view.
 - `POST /analytics/monthly/refresh` -> last successful refresh metadata. Authorise staff; use `refresh_clinic_monthly_discharges()` concurrently and keep a durable successful timestamp consistent with the refreshed snapshot. The source repo does not already store this timestamp. Never use the browser clock as a fake refresh time.
 
 ## Map
 
-`GET /nurses/nearby?latitude=&longitude=&limit=10` -> `{updated_at:ISO8601,items:[{nurse_id,is_active,location:{type:"Point",coordinates:[lng,lat]},created_at:ISO8601,dist:{calculated:480}}]}`. `dist.calculated` is metres. Enforce 5,000 m radius and a bounded limit server-side, return sorted by distance, and do not accept arbitrary client pipelines/operators.
+`GET /nurses/nearby?latitude=&longitude=&limit=10` -> `{updated_at:ISO8601,items:[{nurse_id,nurse_name?,is_active,location:{type:"Point",coordinates:[lng,lat]},created_at:ISO8601,dist:{calculated:480}}]}`. `dist.calculated` is metres. Enforce 5,000 m radius and a bounded limit server-side, return sorted by distance, and do not accept arbitrary client pipelines/operators.
 
 To meet the accepted current-location semantics, select each nurse's latest ping across statuses and locations before treating it as active/nearby; don't retain an old inside-radius ping when a newer offline/outside-radius ping exists. Explicitly enforce the two-hour freshness bound because TTL deletion is asynchronous. Document this correction to the branch's nearest-ping grouping. API updated_at is response freshness, while each created_at is the actual ping time. The client polls while visible and labels retained results stale when a refresh fails.
 
 ## Reviews and catalog
 
 - `GET /reviews/insights` -> `{total_reviews:500,avg_rating:4.2,rating_distribution:[{rating:5,count:250}],frequent_tags:[{tag:"Friendly",count:330}]}`. Adapt the assigned $facet output names (`overall_summary`, `rating_distribution`, `frequent_tags`) and `_id` keys to this transport shape. Global PatientReviews, with `bedside_manner_tags`, has no guaranteed clinic_id. Do not pretend the selected clinic scopes these charts. Return missing rating buckets as zero; top tags remain bounded by the pipeline's ten-tag limit.
-- `GET /catalogs?q=&page=&page_size=1` -> paged full MedicalCatalogs document, `id` equal to stringified Mongo _id, specialty, availability_slots, medication_details and arbitrary extra JSON-compatible fields. Serialise BSON dates/ObjectId safely and cap response size/depth. One document is fetched per page; `q` searches specialty text and `specialty` filters by exact specialty. `GET /catalogs/specialties` -> `{items:[{specialty,count}]}` for the specialty chips. No catalog edit endpoint is needed.
+- `GET /catalogs?q=&specialty=&page=&page_size=1` -> paged full MedicalCatalogs document, `id` equal to stringified Mongo _id, specialty, availability_slots, medication_details and arbitrary extra JSON-compatible fields. Serialise BSON dates/ObjectId safely and cap response size/depth. One document is fetched per page; `q` searches specialty text and `specialty` filters by exact specialty. `GET /catalogs/specialties` -> `{items:[{specialty,count}]}` for the specialty chips. No catalog edit endpoint is needed.
 
 ## Safe failures
 
 Non-2xx responses use `{code: "INSUFFICIENT_HSA_BALANCE"}` or another safe public code. The client intentionally ignores arbitrary server message strings. Supported codes include ACTIVE_VISIT_EXISTS, CLINIC_NOT_ACCEPTING, INVALID_COPAY, STATUS_CONFLICT, INVALID_STATUS_TRANSITION, CSRF_FAILED, SESSION_EXPIRED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, REFRESH_IN_PROGRESS and REQUEST_KEY_CONFLICT. Never return SQL text, stack traces, secrets or another patient's details. Unexpected/network/5xx booking errors remain uncertain; the client retries the original details with the original key rather than claiming an unverified rollback.
+
+## MongoDB setup and command failures
+
+Runtime reads use the `medical_db` database. Schema repair is an administrator command from
+root `mongo/setup.py`; normal API requests never install schema. MongoDB operation errors now
+return `MONGO_SETUP_INCOMPLETE`, `MONGO_PERMISSION_DENIED`, `MONGO_AUTH_FAILED`, or
+`MONGO_VERSION_UNSUPPORTED` with 503; other command failures return `MONGO_QUERY_FAILED` with
+500. Connectivity returns `MONGO_UNAVAILABLE` (503); execution/network timeouts remain
+`DATABASE_TIMEOUT` (503). Raw driver/server messages are not returned in JSON.
+
+
+## UI defaults and Indian demo locations
+
+Map obtains the current device coordinates through browser geolocation (permission required,
+HTTPS or localhost), then passes the returned origin to the existing nearby endpoint. Permission
+failure does not silently display a clinic as the user's location. Manual origin and an explicitly
+selected clinic remain available. The endpoint reads only NursePings and accepts active/name as
+aliases for is_active/nurse_name; canonical fields take precedence.
+
+Audit initializes explicit start_date/end_date for the last 30 UTC calendar dates including today.
+Only applied ranges are saved, separately per patient in per-tab sessionStorage. Returning to the
+screen or reloading restores the range. Reset restores 30 days. The latest current_balance is not
+a historical closing balance. Analytics also initializes a populated explicit 30-calendar-date range;
+the selected-period revenue card sums the exact displayed daily revenue rows.
+
+Generation is constrained to 20 km inland service circles around Hyderabad and selected cities
+in Telangana, Andhra Pradesh, Karnataka and Maharashtra. Geographic defaults, clinic seeds,
+nurse homes, movements and emitted ping checks share data_generation/india_geography.py.
+No database objects or endpoints are added for this geography or UI state.

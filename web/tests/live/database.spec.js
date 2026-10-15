@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 // No API interception: run against the locally seeded stack in explicit demo mode.
 // The test books a real visit, discharges it and retains its audit record.
 test('real seeded database: six screens, booking trigger, clinic status flow and refresh', async ({ page }) => {
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 17.445376, longitude: 78.346144 });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     const pause = () => page.waitForTimeout(1800);

@@ -1,3 +1,4 @@
+import EmptyState from '../common/EmptyState';
 import { useEffect, useRef, useState } from 'react';
 import {
     Alert,
@@ -181,6 +182,7 @@ const Browse = () => {
                             resource={records}
                             empty={records.data?.items.length === 0}
                             emptyMessage='No records match your search.'
+                            emptyAction={{ label: 'Clear filters', onClick: () => { setSearch(''); setFilter(''); setPage(1); setSelectedId(null); } }}
                         >
                             <Box sx={{ overflowX: 'auto' }}>
                                 <Table aria-label={`${entity} records`}>
@@ -286,9 +288,7 @@ const Browse = () => {
                                   : 'appointment'}
                         </Title>
                         {!selectedId ? (
-                            <Typography color='text.secondary'>
-                                Select a record to see its details here.
-                            </Typography>
+                            <EmptyState title='Your care records, at a glance' message='Select a record from the list to see its details here.' />
                         ) : (
                             <State
                                 resource={{

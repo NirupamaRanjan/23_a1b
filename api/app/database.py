@@ -46,9 +46,15 @@ class Database:
                 with connection.cursor(cursor_factory=RealDictCursor) as cursor:
                     yield cursor
         finally:
-            connection.rollback()
-            connection.set_session(readonly=False)
-            self.pool.putconn(connection)
+            # A dropped connection must not mask the original failure or re-enter the pool.
+            broken = bool(connection.closed)
+            if not broken:
+                try:
+                    connection.rollback()
+                    connection.set_session(readonly=False)
+                except psycopg2.Error:
+                    broken = True
+            self.pool.putconn(connection, close=broken)
 
     def close(self):
         self.pool.closeall()

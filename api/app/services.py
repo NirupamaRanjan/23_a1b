@@ -23,6 +23,8 @@ def literal_search(q):
 def date_bounds(start, end):
     if start and end and start > end:
         raise PublicError('INVALID_DATE_RANGE', 422)
+    if end == date.max:
+        raise PublicError('INVALID_DATE_RANGE', 422)
     return start, end + timedelta(days=1) if end else None
 
 
@@ -197,17 +199,16 @@ class CareService:
 class AnalyticsService:
     def __init__(self, database):
         self.database = database
-        # Run the inherited query, including RANGE window and DENSE_RANK, in PostgreSQL.
+        # The history variant retains RANGE/DENSE_RANK and permits historical date selection.
         from pathlib import Path
-        self.query = (Path(__file__).resolve().parent.parent.parent/'sql/06_window_analytics.sql').read_text().strip().rstrip(';')
+        self.query = (Path(__file__).resolve().parent.parent.parent/'sql/08_analytics_history.sql').read_text().strip().rstrip(';')
 
     def revenue(self, clinic_id, start, end):
         today = datetime.now(timezone.utc).date()
-        first_day = today - timedelta(days=30)
-        start = start or first_day
+        start = start or today - timedelta(days=29)
         end = end or today
         date_bounds(start,end)
-        if start<first_day or end>today:
+        if end>today:
             raise PublicError('DATE_OUTSIDE_WINDOW', 422)
         with self.database.cursor(readonly=True) as cur:
             cur.execute('SELECT id FROM clinics WHERE id=%s', (clinic_id,))
@@ -218,12 +219,14 @@ class AnalyticsService:
                 SELECT transaction_date,daily_total,moving_avg_7d FROM inherited
                 WHERE clinic_id=%s AND transaction_date BETWEEN %s AND %s ORDER BY transaction_date''', (clinic_id,start,end))
             rows = cur.fetchall()
-            cur.execute('''SELECT COALESCE(SUM(copay_amount),0)::numeric(20,2) AS total FROM appointments
-                WHERE clinic_id=%s AND status='DISCHARGED' AND created_at >= CURRENT_DATE-INTERVAL '30 days' ''', (clinic_id,))
-            total = cur.fetchone()['total']
-        return transport({'items':rows,'total_copay_revenue':total})
+            # Sum the same daily rows shown by the chart, rather than a separate fixed window.
+            total = sum((row['daily_total'] for row in rows), Decimal('0.00'))
+        return transport({'items':rows,'total_copay_revenue':total,
+            'start_date':start,'end_date':end})
 
     def ranking(self, day, page, size):
+        if day > datetime.now(timezone.utc).date():
+            raise PublicError('DATE_OUTSIDE_WINDOW', 422)
         with self.database.cursor(readonly=True) as cur:
             cur.execute(f'WITH inherited AS ({self.query}) SELECT COUNT(*) AS n FROM inherited WHERE transaction_date=%s', (day,))
             total = cur.fetchone()['n']

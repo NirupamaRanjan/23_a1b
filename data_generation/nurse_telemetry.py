@@ -1,15 +1,15 @@
-"""Shared nurse-telemetry helpers for mongo_seeder.py and api/scripts/fresh_pings.py.
+"""Shared nurse-telemetry helpers for mongo_seeder.py and data_generation/fresh_pings.py.
 
 Every nurse has a home point near one of the clinics and moves in small steps around it, so
-any origin inside the service area (and every clinic) has nurses within the 5 km search radius.
+seeded clinics have nearby nurse telemetry. Active availability depends on the latest ping.
 """
 import math
-import os
 import random
 
-# Fallback service area (midtown Manhattan) when clinic locations cannot be read from PostgreSQL.
-DEFAULT_CENTRE = (40.748817, -73.985130)   # (latitude, longitude)
-DEFAULT_SPREAD_DEG = 0.05
+try:
+    from data_generation.india_geography import DEFAULT_CENTRE, in_service_area, random_point_near, distance_m, raw_move
+except ImportError:
+    from india_geography import DEFAULT_CENTRE, in_service_area, random_point_near, distance_m, raw_move
 
 HOME_RADIUS_M = 2500     # nurses stay within this distance of their home point
 STEP_M = 150             # maximum movement between two pings
@@ -21,66 +21,53 @@ def _metres_per_deg_lng(lat):
     return METRES_PER_DEG_LAT * math.cos(math.radians(lat))
 
 
-def distance_m(lat1, lng1, lat2, lng2):
-    """Small-distance approximation, accurate enough for a few kilometres."""
-    dy = (lat2 - lat1) * METRES_PER_DEG_LAT
-    dx = (lng2 - lng1) * _metres_per_deg_lng((lat1 + lat2) / 2)
-    return math.hypot(dx, dy)
-
-
 def move(lat, lng, metres, bearing_deg):
-    bearing = math.radians(bearing_deg)
-    return (lat + metres * math.cos(bearing) / METRES_PER_DEG_LAT,
-            lng + metres * math.sin(bearing) / _metres_per_deg_lng(lat))
-
-
-def random_point_near(lat, lng, max_m):
-    """Uniformly distributed point within max_m metres."""
-    return move(lat, lng, max_m * math.sqrt(random.random()), random.uniform(0, 360))
+    if not in_service_area(lat, lng):
+        lat, lng = DEFAULT_CENTRE
+    point = raw_move(lat, lng, metres, bearing_deg)
+    return point if in_service_area(*point) else (float(lat), float(lng))
 
 
 def clinic_locations():
     """[(clinic_id, latitude, longitude)] from PostgreSQL, or [] when it cannot be reached."""
     try:
         import psycopg2
-        url = os.getenv("DATABASE_URL")
-        if url:
-            conn = psycopg2.connect(url, connect_timeout=5)
-        else:
-            conn = psycopg2.connect(
-                dbname=os.getenv("CARECONNECT_DB_NAME", "careconnect"),
-                user=os.getenv("CARECONNECT_DB_USER", "postgres"),
-                password=os.getenv("CARECONNECT_DB_PASSWORD"),
-                host=os.getenv("CARECONNECT_DB_HOST", "localhost"),
-                port=os.getenv("CARECONNECT_DB_PORT", "5432"),
-                connect_timeout=5)
+        import sys
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'api'))
+        from app.config import Settings
+        conn = psycopg2.connect(Settings().database_url, connect_timeout=5)
         with conn, conn.cursor() as cur:
             cur.execute("SELECT id, latitude, longitude FROM clinics ORDER BY id")
             rows = cur.fetchall()
         conn.close()
-        return [(row[0], float(row[1]), float(row[2])) for row in rows]
+        return [(row[0], float(row[1]), float(row[2])) for row in rows if in_service_area(row[1], row[2])]
     except Exception as error:  # the seeder still works without PostgreSQL
         print(f"Clinic locations unavailable ({type(error).__name__}); using the default area.")
         return []
 
 
 def nurse_homes(count, clinics):
-    """Assign nurses to clinics round-robin; home = random point within 3 km of the clinic."""
+    """Assign nurses to clinics round-robin; home = random point within 1.2 km of the clinic."""
+    clinics = [c for c in clinics if in_service_area(c[1], c[2])]
     homes = []
     for i in range(count):
         if clinics:
             clinic_id, lat, lng = clinics[i % len(clinics)]
-            home = random_point_near(lat, lng, 3000)
+            home = random_point_near(lat, lng, 1200)
         else:
             clinic_id = None
-            home = (DEFAULT_CENTRE[0] + random.uniform(-DEFAULT_SPREAD_DEG, DEFAULT_SPREAD_DEG),
-                    DEFAULT_CENTRE[1] + random.uniform(-DEFAULT_SPREAD_DEG, DEFAULT_SPREAD_DEG))
+            home = random_point_near(*DEFAULT_CENTRE, 1200)
         homes.append((clinic_id, home))
     return homes
 
 
 def step(lat, lng, home_lat, home_lng):
     """One movement step; drifts back towards home when near the edge of its area."""
+    if not in_service_area(home_lat, home_lng):
+        home_lat, home_lng = DEFAULT_CENTRE
+    if not in_service_area(lat, lng):
+        lat, lng = home_lat, home_lng
     if distance_m(lat, lng, home_lat, home_lng) > HOME_RADIUS_M:
         bearing = math.degrees(math.atan2(
             (home_lng - lng) * _metres_per_deg_lng(lat), (home_lat - lat) * METRES_PER_DEG_LAT))
@@ -97,6 +84,8 @@ def next_duty(active, flip_rate=0.05):
 
 
 def ping(nurse_id, name, lat, lng, active, created_at):
+    if not in_service_area(lat, lng):
+        raise ValueError('Generated nurse coordinates must be inside an Indian service area')
     row = {
         "nurse_id": nurse_id,
         "is_active": active,

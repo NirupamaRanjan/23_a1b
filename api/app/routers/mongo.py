@@ -27,12 +27,18 @@ def reviews(request: Request, actor=Depends(session)):
     return request.app.state.mongo.reviews()
 
 
+@router.get('/api/v1/catalogs/specialties')
+def specialties(request: Request, actor=Depends(session)):
+    return request.app.state.mongo.specialties()
+
+
 @router.get('/api/v1/catalogs')
 def catalogs(
     request: Request,
     q: Annotated[str, Query(max_length=120)] = '',
+    specialty: Annotated[str, Query(max_length=120)] = '',
     page: Page = 1,
     page_size: Annotated[int, Query(ge=1, le=5)] = 1,
     actor=Depends(session),
 ):
-    return request.app.state.mongo.catalogs(q, page, page_size)
+    return request.app.state.mongo.catalogs(q, page, page_size, specialty)

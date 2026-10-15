@@ -1,0 +1,222 @@
+{
+  "database": "medical_db",
+  "collections": {
+    "NursePings": {
+      "schema": {
+        "bsonType": "object",
+        "required": [
+          "nurse_id",
+          "location",
+          "created_at"
+        ],
+        "properties": {
+          "nurse_id": {
+            "bsonType": [
+              "int",
+              "long",
+              "double"
+            ],
+            "multipleOf": 1
+          },
+          "is_active": {
+            "bsonType": "bool"
+          },
+          "location": {
+            "bsonType": "object",
+            "required": [
+              "type",
+              "coordinates"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "Point"
+                ]
+              },
+              "coordinates": {
+                "bsonType": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "bsonType": [
+                    "int",
+                    "long",
+                    "double"
+                  ]
+                }
+              }
+            }
+          },
+          "created_at": {
+            "bsonType": "date"
+          },
+          "active": {
+            "bsonType": "bool"
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "is_active"
+            ]
+          },
+          {
+            "required": [
+              "active"
+            ]
+          }
+        ]
+      },
+      "indexes": [
+        {
+          "keys": [
+            [
+              "location",
+              "2dsphere"
+            ]
+          ]
+        },
+        {
+          "keys": [
+            [
+              "created_at",
+              1
+            ]
+          ],
+          "options": {
+            "expireAfterSeconds": 7200
+          }
+        },
+        {
+          "keys": [
+            [
+              "nurse_id",
+              1
+            ],
+            [
+              "created_at",
+              -1
+            ],
+            [
+              "_id",
+              -1
+            ]
+          ]
+        }
+      ]
+    },
+    "PatientReviews": {
+      "schema": {
+        "bsonType": "object",
+        "required": [
+          "rating"
+        ],
+        "properties": {
+          "rating": {
+            "bsonType": [
+              "int",
+              "long",
+              "double"
+            ],
+            "minimum": 1,
+            "maximum": 5,
+            "multipleOf": 1
+          },
+          "bedside_manner_tags": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "string"
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "keys": [
+            [
+              "rating",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    "MedicalCatalogs": {
+      "schema": {
+        "bsonType": "object",
+        "properties": {
+          "specialty": {
+            "bsonType": "string"
+          }
+        }
+      },
+      "indexes": [
+        {
+          "keys": [
+            [
+              "specialty",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    "Nurses": {
+      "schema": {
+        "bsonType": "object",
+        "required": [
+          "nurse_id"
+        ],
+        "properties": {
+          "nurse_id": {
+            "bsonType": [
+              "int",
+              "long",
+              "double"
+            ],
+            "multipleOf": 1
+          },
+          "home": {
+            "bsonType": "object",
+            "required": [
+              "type",
+              "coordinates"
+            ],
+            "properties": {
+              "type": {
+                "enum": [
+                  "Point"
+                ]
+              },
+              "coordinates": {
+                "bsonType": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": {
+                  "bsonType": [
+                    "int",
+                    "long",
+                    "double"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "keys": [
+            [
+              "nurse_id",
+              1
+            ]
+          ],
+          "options": {
+            "unique": true
+          }
+        }
+      ]
+    }
+  }
+}

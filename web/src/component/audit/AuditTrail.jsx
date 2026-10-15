@@ -16,30 +16,36 @@ import {
 import { useSession } from '../../context/DataProvider';
 import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
+import { last30Days, loadAuditRange, saveAuditRange, validRange } from '../../utils/dateRange';
+import EmptyState from '../common/EmptyState';
 import { dateTime, money } from '../../utils/format';
 import { FieldValue, Heading, Pager, Panel, State, Title } from '../common/Ui';
 const AuditTrail = () => {
     const { session } = useSession();
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
-    const [range, setRange] = useState({});
+    const [range, setRange] = useState(() => loadAuditRange(session.patient?.id));
+    const [from, setFrom] = useState(range.start_date);
+    const [to, setTo] = useState(range.end_date);
     const [page, setPage] = useState(1);
     const [validation, setValidation] = useState('');
     const resource = useApi(API.audit, { ...range, page, page_size: 10 }, !!session.patient);
     const apply = (event) => {
         event.preventDefault();
-        if (from && to && from > to) {
-            setValidation('The From date must not be after the To date.');
+        if (!validRange({ start_date: from, end_date: to })) {
+            setValidation('Choose both dates, with From on or before To.');
             return;
         }
         setValidation('');
-        setRange({ start_date: from, end_date: to });
+        const next = { start_date: from, end_date: to };
+        setRange(next);
+        saveAuditRange(session.patient.id, next);
         setPage(1);
     };
     const clear = () => {
-        setFrom('');
-        setTo('');
-        setRange({});
+        const next = last30Days();
+        setFrom(next.start_date);
+        setTo(next.end_date);
+        setRange(next);
+        saveAuditRange(session.patient?.id, next);
         setPage(1);
         setValidation('');
     };
@@ -86,12 +92,16 @@ const AuditTrail = () => {
                     Apply dates
                 </Button>
                 <Button variant='outlined' onClick={clear}>
-                    Clear dates
+                    Last 30 days
                 </Button>
             </Stack>
+            {session.patient && <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
+                Applied period (UTC): {range.start_date} to {range.end_date}.
+                {(from !== range.start_date || to !== range.end_date) && ' Date edits are not applied yet; choose Apply dates to update the results.'}
+            </Typography>}
             {!session.patient ? (
                 <Panel>
-                    <Typography>No patient is associated with this session.</Typography>
+                    <EmptyState title='Choose a patient' message='Select a patient in the header to view their wallet activity.' />
                 </Panel>
             ) : (
                 <>
@@ -154,7 +164,9 @@ const AuditTrail = () => {
                         <State
                             resource={resource}
                             empty={data?.items.length === 0}
-                            emptyMessage='No audit entries in this date range.'
+                            emptyMessage='No wallet activity was recorded for this patient during the selected period.'
+                            emptyTitle='No activity for these dates'
+                            emptyAction={{ label: 'Last 30 days', onClick: clear }}
                         >
                             <Box sx={{ overflowX: 'auto' }}>
                                 <Table aria-label='HSA audit entries'>

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Annotated, Literal
 from uuid import UUID
-from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Path as PathParam, Request
 from ..errors import PublicError
 from ..models import BookingInput, StatusInput
 
@@ -44,13 +44,13 @@ def book(
 
 
 @router.patch('/{record_id}/status')
-def change_status(request: Request, record_id: int, body: StatusInput,
+def change_status(request: Request, record_id: Annotated[int, PathParam(gt=0, le=2147483647)], body: StatusInput,
                   actor=Depends(mutation)):
     return request.app.state.care.status(record_id, actor, body)
 
 
 @router.get('/{record_id}')
-def appointment_detail(request: Request, record_id: int, actor=Depends(session)):
+def appointment_detail(request: Request, record_id: Annotated[int, PathParam(gt=0, le=2147483647)], actor=Depends(session)):
     if record_id < 1 or record_id > 2147483647:
         raise PublicError('VALIDATION_ERROR', 422)
     return request.app.state.care.detail('appointments', record_id, actor)

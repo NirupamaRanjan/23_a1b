@@ -11,3 +11,12 @@ Before submitting:
 5. Rename the supplied ZIP to `<new_team_number>_a1b.zip` using your actual Assignment 2 team number. The inherited repository number 23 is not evidence of your new team number.
 6. Keep the ZIP strictly under 20 MB. Exclude node_modules, environments, caches, build outputs and database dumps.
 7. Each member should understand the inherited procedure, audit trigger, partial unique index, RANGE window, DENSE_RANK, materialized view, $geoNear and $facet for the viva.
+
+
+Documentation review:
+
+- Keep `handover_note.md`, `api_endpoints.md`, user descriptions and six SVG wireframes in `docs/`.
+- The handover and notes are current; the SVG artboards and existing video are historical designs/evidence.
+- Add final screenshots and a reviewed current demo link to the root README.
+- Read `docs/README.md` for the assignment requirement mapping; supporting test/review notes do not
+  replace the required handover, API sketch or design material.

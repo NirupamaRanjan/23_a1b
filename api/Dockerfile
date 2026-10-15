@@ -6,6 +6,7 @@ COPY api/requirements.txt ./api-requirements.txt
 COPY data_generation/requirements.txt ./data-generation-requirements.txt
 RUN pip install --no-cache-dir -r api-requirements.txt -r data-generation-requirements.txt
 COPY sql/ ./sql/
+COPY mongo/ ./mongo/
 COPY data_generation/ ./data_generation/
 COPY api/ ./api/
 WORKDIR /app/api

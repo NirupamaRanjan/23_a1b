@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-14T23:22:30.164429+00:00",
+  "mongo_version": "7.0.16",
+  "map_latency_seconds": [
+    2.466,
+    2.36,
+    2.294
+  ],
+  "nearby_nurses": 10,
+  "appointments": 50001,
+  "audit_entries": 100001,
+  "nurse_pings": 500000,
+  "scope": "Local seeded API requests, three consecutive calls, 5 km radius, limit 10; excludes OSM tile downloads.",
+  "environment": "Linux; PostgreSQL 16.15; MongoDB 7.0.16; Python 3.12",
+  "notes": "The timing run follows a successful live browser booking/discharge, retained as one extra appointment/audit row. Hardware, data and load affect timings."
+}

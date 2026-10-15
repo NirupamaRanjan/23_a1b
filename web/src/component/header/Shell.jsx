@@ -33,7 +33,7 @@ const Header = styled(Box)(({ theme }) => ({
     flexShrink: 0,
     background: theme.palette.background.paper,
     borderBottom: `1px solid ${theme.palette.divider}`,
-    padding: '20px 36px',
+    padding: '20px 24px',
     [theme.breakpoints.down('sm')]: { padding: '10px 16px' },
 }));
 const Navigation = styled(Box)(({ theme }) => ({
@@ -42,7 +42,7 @@ const Navigation = styled(Box)(({ theme }) => ({
     borderBottom: `1px solid ${theme.palette.divider}`,
     display: 'flex',
     overflowX: 'auto',
-    padding: '0 24px',
+    padding: '0 6px',
     '& a': {
         textDecoration: 'none',
         color: theme.palette.text.secondary,
@@ -67,9 +67,12 @@ const Navigation = styled(Box)(({ theme }) => ({
 }));
 const Main = styled(Box, { shouldForwardProp: (prop) => prop !== 'fit' })(({ theme, fit }) => ({
     width: '100%',
-    maxWidth: 1440,
-    margin: '0 auto',
-    padding: fit ? '36px 64px 16px' : '36px 64px',
+    // Keep all six screens aligned to the viewport, including ultrawide displays.
+    maxWidth: 'none',
+    alignSelf: 'stretch',
+    minWidth: 0,
+    margin: 0,
+    padding: fit ? '28px 24px 16px' : '28px 24px',
     flex: fit ? '1 1 0' : '1 0 auto',
     minHeight: 0,
     ...(fit && {
@@ -258,16 +261,11 @@ const Shell = () => {
                 >
                     <Stack direction='row' sx={{ alignItems: 'center', gap: 1.5, mr: 'auto' }}>
                         <Box
-                            sx={{
-                                bgcolor: 'primary.main',
-                                color: 'primary.contrastText',
-                                p: 0.75,
-                                display: 'flex',
-                                borderRadius: 2,
-                            }}
-                        >
-                            <AddIcon sx={{ fontSize: 28 }} />
-                        </Box>
+                            component='img'
+                            src='/carelogo.png'
+                            alt='CareConnect logo'
+                            sx={{ height: { xs: 32, md: 40 }, width: 'auto', display: 'block' }}
+                        />
                         <Typography
                             sx={{
                                 fontSize: { xs: fit ? 15 : 20, sm: 20, md: 25 },
@@ -335,7 +333,7 @@ const Shell = () => {
                     component='footer'
                     variant='body2'
                     color='text.secondary'
-                    sx={{ px: { xs: 2, md: 8 }, pb: 3 }}
+                    sx={{ px: { xs: 2, sm: 3 }, pb: 3 }}
                 >
                     Amounts use HSA account units. Dates and times are shown in UTC.
                 </Typography>

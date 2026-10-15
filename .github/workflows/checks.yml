@@ -1,0 +1,103 @@
+name: Windows and Docker checks
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        node: ['22.14.0', '24']
+        shell: [powershell, pwsh]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse every PowerShell script
+        shell: ${{ matrix.shell }}
+        run: |
+          Get-ChildItem scripts/*.ps1 | ForEach-Object {
+            $Tokens = $null; $Errors = $null
+            $null = [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$Tokens, [ref]$Errors)
+            if ($Errors.Count) { throw ($Errors | Out-String) }
+          }
+      - name: Setup through the Windows script, with a workspace path containing spaces
+        shell: ${{ matrix.shell }}
+        run: |
+          $Target = Join-Path $env:RUNNER_TEMP 'CareConnect Project'
+          New-Item -ItemType Directory -Path $Target | Out-Null
+          Get-ChildItem -Force | Where-Object Name -ne '.git' | Copy-Item -Destination $Target -Recurse
+          Set-Location $Target
+          'DATABASE_URL=postgresql://postgres:unused@127.0.0.1/careconnect' | Set-Content .env
+          ./scripts/setup-windows.ps1 -TestTools
+          if ($LASTEXITCODE -ne 0) { throw 'Windows setup failed' }
+          "CARECONNECT_TEST_ROOT=$Target" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - name: Frontend unit tests, build and browser regressions
+        shell: ${{ matrix.shell }}
+        run: |
+          Set-Location (Join-Path $env:CARECONNECT_TEST_ROOT 'web')
+          npm.cmd test
+          if ($LASTEXITCODE -ne 0) { throw 'Unit tests failed' }
+          npm.cmd run build
+          if ($LASTEXITCODE -ne 0) { throw 'Build failed' }
+          npx.cmd playwright install chromium
+          if ($LASTEXITCODE -ne 0) { throw 'Browser installation failed' }
+          npm.cmd run test:e2e
+          if ($LASTEXITCODE -ne 0) { throw 'Browser tests failed' }
+      - name: Backend configuration and imports on Windows
+        shell: ${{ matrix.shell }}
+        run: |
+          Set-Location $env:CARECONNECT_TEST_ROOT
+          ./.venv/Scripts/python.exe scripts/check-config.py
+          if ($LASTEXITCODE -ne 0) { throw 'Configuration check failed' }
+          Set-Location api
+          ../.venv/Scripts/python.exe -m pytest tests/test_config.py -q
+          if ($LASTEXITCODE -ne 0) { throw 'Configuration tests failed' }
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      COMPOSE_PROJECT_NAME: careconnect-ci
+      CARECONNECT_TEST_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:55432/careconnect_test
+      CARECONNECT_TEST_MONGO_URI: mongodb://127.0.0.1:57017/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.14.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate and build/start actual Docker images
+        run: |
+          cp .env.docker.example .env.docker
+          docker compose --env-file .env.docker config --quiet
+          docker compose --env-file .env.docker up --build --wait --wait-timeout 900
+      - name: Verify Nginx proxy, sessions, SPA routing and data
+        shell: pwsh
+        run: ./scripts/test-docker.ps1
+      - name: Backend integration against container databases
+        run: |
+          python -m pip install -r api/requirements-dev.txt
+          docker compose --env-file .env.docker exec -T postgres createdb -U postgres careconnect_test
+          cd api
+          python -m pytest tests -q
+      - name: Browser workflow through production Nginx
+        working-directory: web
+        env:
+          CARECONNECT_LIVE_URL: http://127.0.0.1:8080
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          npm run test:live
+      - name: Stack diagnostics on failure
+        if: failure()
+        run: docker compose --env-file .env.docker logs --tail 100
+      - name: Stop CI containers (volumes retained)
+        if: always()
+        run: docker compose --env-file .env.docker down

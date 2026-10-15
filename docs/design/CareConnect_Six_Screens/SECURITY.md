@@ -1,4 +1,9 @@
-# Security requirements for the later implementation
+# Security requirements from the original design stage
+
+This is a historical mockup checklist. Current implementation notes are in
+[web/docs/SECURITY.md](../../../web/docs/SECURITY.md); executed checks and their limits are in
+[verification.md](../../verification.md). The statements below describe the design-only stage.
+
 
 This is a design-only phase. No CSRF, SQL-injection, XSS or other attack prevention has been implemented or verified by these static SVG/PDF mockups. The following controls are mandatory implementation/verification requirements; none requires a seventh screen.
 

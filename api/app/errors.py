@@ -24,10 +24,30 @@ def translate_postgres(error):
         return PublicError('INVALID_COPAY')
     if code == '22003':  # numeric value out of range
         return PublicError('INVALID_COPAY')
-    if code == '57014':  # statement timeout
+    if code in ('57014', '55P03'):  # statement timeout
         return PublicError('DATABASE_TIMEOUT', 503)
     if code in ('42P01', '42883', '42703'):  # missing table, function or column
         return PublicError('DATABASE_SETUP_INCOMPLETE', 500)
     if code is None:  # connection-level failure: the server could not be reached
         return PublicError('POSTGRES_UNAVAILABLE', 503)
     return PublicError('DATABASE_ERROR', 500)
+
+
+def translate_mongo(error):
+    """Separate command/setup/auth failures from connectivity without exposing driver details."""
+    from pymongo.errors import OperationFailure
+    if isinstance(error, OperationFailure):
+        code = error.code
+        reason = str((error.details or {}).get('errmsg', '')).lower()
+        if code == 13:
+            return PublicError('MONGO_PERMISSION_DENIED', 503)
+        if code == 18:
+            return PublicError('MONGO_AUTH_FAILED', 503)
+        if code in (27, 291, 16604, 17007) or (
+            'geonear' in reason and ('index' in reason or 'namespace' in reason)
+        ):
+            return PublicError('MONGO_SETUP_INCOMPLETE', 503)
+        if code in (168, 40324) or 'unrecognized expression' in reason or 'unrecognized pipeline stage' in reason:
+            return PublicError('MONGO_VERSION_UNSUPPORTED', 503)
+        return PublicError('MONGO_QUERY_FAILED', 500)
+    return PublicError('MONGO_UNAVAILABLE', 503)

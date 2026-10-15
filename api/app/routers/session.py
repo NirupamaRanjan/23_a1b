@@ -46,21 +46,26 @@ def get_session(request: Request, response: Response):
     return sessions.payload(current)
 
 
-@router.get('/actors')
+def demo_only(request: Request):
+    if not request.app.state.settings.demo_mode:
+        raise PublicError('DEMO_MODE_OFF', 403)
+
+
+@router.get('/actors', dependencies=[Depends(demo_only)])
 def actors(request: Request, q: Search = '', page: Page = 1, page_size: Size = 5,
            actor=Depends(session)):
     settings = request.app.state.settings
     if not settings.demo_mode:
-        raise PublicError('FORBIDDEN', 403)
+        raise PublicError('DEMO_MODE_OFF', 403)
     return request.app.state.care.actors(q, page, page_size)
 
 
-@router.post('/actor')
+@router.post('/actor', dependencies=[Depends(demo_only)])
 def switch_actor(request: Request, body: ActorInput, response: Response,
                  actor=Depends(mutation)):
     settings = request.app.state.settings
     if not settings.demo_mode:
-        raise PublicError('FORBIDDEN', 403)
+        raise PublicError('DEMO_MODE_OFF', 403)
     table = 'patients' if body.role == 'patient' else 'clinics'
     with request.app.state.database.cursor(readonly=True) as cur:
         cur.execute(f'SELECT id FROM {table} WHERE id=%s', (body.actor_id,))

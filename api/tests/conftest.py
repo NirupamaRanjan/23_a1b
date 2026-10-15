@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
 import pytest
@@ -10,6 +11,7 @@ from app.database import Database
 from app.main import create_app
 
 ROOT=Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT.parent))
 
 @pytest.fixture(scope='session')
 def database():
@@ -19,7 +21,7 @@ def database():
     if not urlparse(url).path.endswith('_test'):
         raise RuntimeError('Integration tests refuse to reset a database not ending in _test')
     settings=Settings(database_url=url,mongo_uri=os.getenv('CARECONNECT_TEST_MONGO_URI','mongodb://localhost:27017/'),
-        mongo_db='careconnect_test',demo_mode=True)
+        mongo_db='medical_db_test',demo_mode=True)
     with psycopg2.connect(url) as connection:
         with connection.cursor() as cur:
             cur.execute("SELECT to_regclass('patients')")
@@ -28,12 +30,12 @@ def database():
                     if file.name.startswith('06_'):continue
                     cur.execute(file.read_text())
     db=Database(settings)
-    db.mongo.NursePings.create_index([('location','2dsphere')])
-    db.mongo.NursePings.create_index([('nurse_id',1),('created_at',-1),('_id',-1)])
+    from mongo.setup import apply_schema
+    apply_schema(db.mongo)
     yield db,settings
     db.close()
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def reset_data(database):
     db,_=database
     with db.cursor() as cur:

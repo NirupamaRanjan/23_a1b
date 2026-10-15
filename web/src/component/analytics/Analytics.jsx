@@ -19,6 +19,8 @@ import { useSession } from '../../context/DataProvider';
 import { API } from '../../service/api';
 import useApi from '../../hooks/useApi';
 import { dateTime, money, number, todayUTC } from '../../utils/format';
+import { last30Days, validRange } from '../../utils/dateRange';
+import EmptyState from '../common/EmptyState';
 import { Heading, Pager, Panel, State, Title } from '../common/Ui';
 const RevenueChart = ({ rows }) => {
     const theme = useTheme();
@@ -35,7 +37,7 @@ const RevenueChart = ({ rows }) => {
                 viewBox='0 0 790 275'
                 role='img'
                 aria-label='Seven-day moving average of realized clinic copays. Exact values are available below.'
-                sx={{ width: '100%', minHeight: 180, maxHeight: 350 }}
+                sx={{ width: '100%', minHeight: 180, maxHeight: { xs: 350, lg: 440 } }}
             >
                 {[0, 0.5, 1].map((scale) => (
                     <g key={scale}>
@@ -127,12 +129,11 @@ const RevenueChart = ({ rows }) => {
 };
 const Analytics = () => {
     const { selectedClinic, session } = useSession();
-    const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
+    const [from, setFrom] = useState(() => last30Days().start_date);
+    const [to, setTo] = useState(() => last30Days().end_date);
     const [month, setMonth] = useState(todayUTC().slice(0, 7));
     const today = todayUTC();
-    // Workflow 2 covers the last 30 days (UTC), so the date pickers stay inside that window.
-    const windowStart = new Date(Date.parse(today) - 30 * 86400000).toISOString().slice(0, 10);
+    // Thirty days is the default view; all stored historical dates remain selectable.
     const [rankDate, setRankDate] = useState(today);
     const [page, setPage] = useState(1);
     const [busy, setBusy] = useState(false);
@@ -145,7 +146,7 @@ const Analytics = () => {
         setRetained(null);
         setError('');
     }, [clinic, month]);
-    const datesValid = !from || !to || from <= to;
+    const datesValid = validRange({ start_date: from, end_date: to }) && to <= today;
     const series = useApi(
         API.revenue,
         { clinic_id: clinic, start_date: from, end_date: to },
@@ -230,13 +231,13 @@ const Analytics = () => {
                             </State>
                         </Panel>
                         <Panel>
-                            <Typography color='text.secondary'>30-day copay revenue</Typography>
+                            <Typography color='text.secondary'>Selected-period copay revenue</Typography>
                             <State resource={series}>
                                 <Typography sx={{ fontSize: 32, fontWeight: 700, my: 1 }}>
                                     {money(series.data?.total_copay_revenue)}
                                 </Typography>
                                 <Typography variant='body2' color='text.secondary'>
-                                    Query-derived realized revenue
+                                    {from} to {to} · discharged appointments
                                 </Typography>
                             </State>
                         </Panel>
@@ -279,7 +280,7 @@ const Analytics = () => {
                                 onChange={(event) => setFrom(event.target.value)}
                                 slotProps={{
                                     inputLabel: { shrink: true },
-                                    htmlInput: { min: windowStart, max: today },
+                                    htmlInput: { max: today },
                                 }}
                             />
                             <TextField
@@ -289,19 +290,21 @@ const Analytics = () => {
                                 onChange={(event) => setTo(event.target.value)}
                                 slotProps={{
                                     inputLabel: { shrink: true },
-                                    htmlInput: { min: windowStart, max: today },
+                                    htmlInput: { max: today },
                                 }}
                             />
                         </Stack>
                         {!datesValid ? (
                             <Alert severity='warning'>
-                                The From date must not be after the To date.
+                                Choose both dates on or before today, with From on or before To.
                             </Alert>
                         ) : (
                             <State
                                 resource={series}
                                 empty={series.data?.items.length === 0}
                                 emptyMessage='No discharged revenue in this period.'
+                                emptyTitle='No revenue for these dates'
+                                emptyAction={{ label: 'Reset dates', onClick: () => { const range = last30Days(); setFrom(range.start_date); setTo(range.end_date); } }}
                             >
                                 <Typography variant='body2' color='text.secondary'>
                                     Average of recorded revenue days within each seven-day window.
@@ -313,7 +316,7 @@ const Analytics = () => {
                 </>
             ) : (
                 <Panel sx={{ mb: 3 }}>
-                    Choose a clinic to see its revenue and monthly summary.
+                    <EmptyState title='Choose a clinic' message='Select a clinic in the header to see its revenue and monthly summary.' />
                 </Panel>
             )}
             <Panel>
@@ -329,7 +332,7 @@ const Analytics = () => {
                         }}
                         slotProps={{
                             inputLabel: { shrink: true },
-                            htmlInput: { min: windowStart, max: today },
+                            htmlInput: { max: today },
                         }}
                     />
                 </Stack>
@@ -338,8 +341,10 @@ const Analytics = () => {
                 </Typography>
                 <State
                     resource={ranking}
-                    empty={ranking.data?.items.length === 0}
+                    empty={!rankDate || ranking.data?.items.length === 0}
                     emptyMessage='No discharged revenue on this date, so no clinics are ranked.'
+                    emptyTitle='No clinics to rank'
+                    emptyAction={{ label: 'Use today', onClick: () => { setRankDate(today); setPage(1); } }}
                 >
                     <Box sx={{ overflowX: 'auto' }}>
                         <Table aria-label='Clinic ranking'>

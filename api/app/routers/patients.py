@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query, Path as PathParam, Request
 from ..errors import PublicError
 
 Page = Annotated[int, Query(ge=1, le=1000000)]
@@ -20,7 +20,7 @@ def patients(request: Request, q: Search = '', page: Page = 1, page_size: Size =
 
 
 @router.get('/{record_id}')
-def patient_detail(request: Request, record_id: int, actor=Depends(session)):
+def patient_detail(request: Request, record_id: Annotated[int, PathParam(gt=0, le=2147483647)], actor=Depends(session)):
     if record_id < 1 or record_id > 2147483647:
         raise PublicError('VALIDATION_ERROR', 422)
     return request.app.state.care.detail('patients', record_id, actor)

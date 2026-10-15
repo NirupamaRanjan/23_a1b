@@ -42,9 +42,9 @@ const theme = createTheme({
         divider: COLORS.border,
     },
     typography: {
-        fontFamily: 'Arial, sans-serif',
-        h1: { fontSize: 'clamp(1.65rem, 2.6vw, 2.15rem)', fontWeight: 700 },
-        h2: { fontSize: '1.3rem', fontWeight: 600 },
+        fontFamily: '"Inter", "Segoe UI", sans-serif',
+        h1: { fontSize: 'clamp(1.65rem, 2.6vw, 2.15rem)', fontWeight: 700, letterSpacing: '-0.035em' },
+        h2: { fontSize: '1.3rem', fontWeight: 600, letterSpacing: '-0.02em' },
         h3: { fontSize: '1.1rem', fontWeight: 600 },
         button: { textTransform: 'none', fontWeight: 600 },
     },
@@ -95,13 +95,21 @@ const App = () => (
         <CssBaseline />
         <GlobalStyles
             styles={{
-                'html, body, #root': { margin: 0, minHeight: '100%' },
+                '@font-face': {
+                    fontFamily: 'Inter',
+                    fontStyle: 'normal',
+                    fontWeight: '100 900',
+                    fontDisplay: 'swap',
+                    src: "url('/fonts/inter-latin-wght-normal.woff2') format('woff2')",
+                },
+                'html, body, #root': { margin: 0, minHeight: '100%', width: '100%', maxWidth: 'none', padding: 0 },
                 '*': { boxSizing: 'border-box' },
                 'button:focus-visible, a:focus-visible': {
                     outline: `2px solid ${COLORS.primary}`,
                     outlineOffset: 2,
                 },
-                'input, button, textarea': { font: 'inherit' },
+                'input, button, textarea, select': { font: 'inherit' },
+                '.leaflet-container': { fontFamily: 'inherit' },
             }}
         />
         <DataProvider>

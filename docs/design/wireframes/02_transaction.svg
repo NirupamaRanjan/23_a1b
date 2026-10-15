@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="1440" height="1170" viewBox="0 0 1440 1170" role="img" aria-labelledby="title desc">
+<title id="title">CareConnect - Transaction</title><desc id="desc">One of exactly six screen designs. All shown names, records, amounts and chart values are illustrative layout data. Reference style: white header, teal navigation, pale background and rounded cards.</desc>
+<rect x="0" y="0" width="1440" height="1170" rx="0" fill="#F3F8F7" stroke="none" stroke-width="1.1"/>
+<rect x="0" y="0" width="1440" height="104" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
+<line x1="0" y1="104" x2="1440" y2="104" stroke="#D8E5E3" stroke-width="1"/>
+<rect x="36" y="31" width="44" height="44" rx="12" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<g transform="translate(46,41) scale(1.0)" fill="none" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 4 V 20 M 4 12 H 20"/></g>
+<text x="94" y="61" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="700" fill="#173C3A" text-anchor="start">CareConnect</text>
+<text x="746" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Acting as (demo)</text>
+<rect x="746" y="32" width="296" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="761" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Patient: Asha Rao (10482)</text>
+<g transform="translate(1010,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<text x="1062" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Selected clinic</text>
+<rect x="1062" y="32" width="330" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="1077" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Lakeview Family Clinic (217)</text>
+<g transform="translate(1360,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<rect x="0" y="105" width="1440" height="63" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1.1"/>
+<line x1="0" y1="168" x2="1440" y2="168" stroke="#D8E5E3" stroke-width="1"/>
+<text x="49" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Browse</text>
+<text x="149" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="start">Transaction</text>
+<line x1="136" y1="166" x2="293" y2="166" stroke="#117C76" stroke-width="3"/>
+<text x="306" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Audit trail</text>
+<text x="451" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Analytics</text>
+<text x="579" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Map</text>
+<text x="664" y="144" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#607B79" text-anchor="start">Reviews</text>
+<text x="88" y="237" font-family="Arial, DejaVu Sans, sans-serif" font-size="34" font-weight="700" fill="#173C3A" text-anchor="start">Book an appointment</text>
+<text x="88" y="272" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#607B79" text-anchor="start">Confirm your clinic and copay. Your HSA charge and audit entry are saved together.</text>
+<rect x="88" y="316" width="546" height="727" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="115" y="358" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Booking details</text>
+<text x="115" y="412" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Patient</text>
+<rect x="115" y="422" width="492" height="52" rx="9" fill="#F4F8F7" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="130" y="455" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Asha Rao · 10482</text>
+<text x="115" y="516" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Clinic</text>
+<rect x="115" y="526" width="492" height="52" rx="9" fill="#F4F8F7" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="130" y="559" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Lakeview Family Clinic · 217</text>
+<text x="607" y="516" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="600" fill="#117C76" text-anchor="end">Change in Browse</text>
+<rect x="115" y="607" width="492" height="107" rx="11" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="136" y="644" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#117C76" text-anchor="start">Current HSA balance</text>
+<text x="136" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="34" font-weight="700" fill="#117C76" text-anchor="start">5,000.00</text>
+<text x="115" y="763" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Copay amount</text>
+<rect x="115" y="773" width="492" height="52" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="130" y="806" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">500.00</text>
+<text x="115" y="853" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Enter a positive amount with up to two decimal places.</text>
+<text x="115" y="876" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Copay must be greater than zero.</text>
+<rect x="115" y="924" width="492" height="54" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<text x="361.0" y="957.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Book appointment</text>
+<text x="658" y="349" font-family="Arial, DejaVu Sans, sans-serif" font-size="22" font-weight="600" fill="#173C3A" text-anchor="start">Result</text>
+<g id="result-success" inkscape:groupmode="layer" inkscape:label="Transaction / success">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="115" y="607" width="492" height="107" rx="11" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="136" y="644" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#117C76" text-anchor="start">Current HSA balance</text>
+<text x="136" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="34" font-weight="700" fill="#117C76" text-anchor="start">4,500.00</text>
+<rect x="115" y="924" width="492" height="54" rx="9" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="361.0" y="957.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="middle">Active visit: booking unavailable</text>
+<rect x="659" y="386" width="692" height="94" rx="13" fill="#DBFBE6" stroke="none" stroke-width="1.1"/>
+<rect x="659" y="447" width="692" height="33" rx="0" fill="#DBFBE6" stroke="none" stroke-width="1.1"/>
+<circle cx="700" cy="429" r="15" fill="none" stroke="#237942" stroke-width="2.5"/>
+<g transform="translate(690,419) scale(0.875)" fill="none" stroke="#237942" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 6 12 L 10 16 L 18 8"/></g>
+<text x="730" y="427" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="700" fill="#205F38" text-anchor="start">Appointment booked</text>
+<text x="730" y="456" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="400" fill="#35764A" text-anchor="start">Lakeview Family Clinic · Waiting</text>
+<text x="686" y="526" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Appointment ID</text>
+<text x="686" y="555" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="600" fill="#173C3A" text-anchor="start">558201</text>
+<text x="912" y="526" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Balance before</text>
+<text x="912" y="555" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="600" fill="#173C3A" text-anchor="start">5,000.00</text>
+<text x="1122" y="526" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Balance after</text>
+<text x="1122" y="555" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="600" fill="#173C3A" text-anchor="start">4,500.00</text>
+<text x="1122" y="587" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#A82E2E" text-anchor="start">−500.00</text>
+<text x="686" y="637" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="600" fill="#173C3A" text-anchor="start">Audit entry created by the trigger</text>
+<rect x="1196" y="618" width="128" height="28" rx="14" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="1260.0" y="637" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#117C76" text-anchor="middle">Read-only</text>
+<rect x="686" y="660" width="638" height="113" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="687" y="661" width="636" height="43" rx="8" fill="#F4F8F7" stroke="none" stroke-width="1.1"/>
+<text x="702" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Audit ID</text>
+<text x="805" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Action</text>
+<text x="930" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Amount</text>
+<text x="1046" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Balance after</text>
+<text x="1195" y="689" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="600" fill="#607B79" text-anchor="start">Time (UTC)</text>
+<text x="702" y="743" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="600" fill="#173C3A" text-anchor="start">90417</text>
+<rect x="799" y="721" width="83" height="28" rx="14" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<text x="840.5" y="740" font-family="Arial, DejaVu Sans, sans-serif" font-size="12.5" font-weight="600" fill="#A82E2E" text-anchor="middle">DEBIT</text>
+<text x="930" y="743" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">500.00</text>
+<text x="1046" y="743" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">4,500.00</text>
+<text x="1195" y="743" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#173C3A" text-anchor="start">22:31</text>
+<text x="686" y="812" font-family="Arial, DejaVu Sans, sans-serif" font-size="13" font-weight="400" fill="#607B79" text-anchor="start">12 Oct 2026 · Audit #90417</text>
+<rect x="686" y="866" width="244" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="798.0" y="896.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">View audit trail</text>
+<g transform="translate(900,880.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<g id="result-low-balance" inkscape:groupmode="layer" inkscape:label="Transaction / low-balance" style="display:none">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="115" y="773" width="492" height="52" rx="9" fill="#FFFFFF" stroke="#A82E2E" stroke-width="1.8"/>
+<text x="130" y="806" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">6,000.00</text>
+<rect x="686" y="420" width="638" height="99" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<g transform="translate(703,449) scale(1.0)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
+<text x="742" y="464" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#A82E2E" text-anchor="start">Your HSA balance is too low</text>
+<text x="686" y="572" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">This copay is higher than your available balance.</text>
+<text x="686" y="601" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">Enter a lower amount, then try again.</text>
+<text x="686" y="675" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">No booking, debit or audit entry was saved.</text>
+<rect x="686" y="752" width="252" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="802.0" y="782.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Return to booking</text>
+<g transform="translate(908,766.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<g id="result-active-visit" inkscape:groupmode="layer" inkscape:label="Transaction / active-visit" style="display:none">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="686" y="420" width="638" height="99" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<g transform="translate(703,449) scale(1.0)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
+<text x="742" y="464" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#A82E2E" text-anchor="start">You already have an active visit</text>
+<text x="686" y="572" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">Your Waiting or In consultation appointment must</text>
+<text x="686" y="601" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">be discharged by clinic staff before booking again.</text>
+<text x="686" y="675" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">No additional charge was made.</text>
+<rect x="686" y="752" width="252" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="802.0" y="782.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Browse appointments</text>
+<g transform="translate(908,766.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<g id="result-invalid-copay" inkscape:groupmode="layer" inkscape:label="Transaction / invalid-copay" style="display:none">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="115" y="773" width="492" height="52" rx="9" fill="#FFFFFF" stroke="#A82E2E" stroke-width="1.8"/>
+<text x="130" y="806" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">0.00</text>
+<rect x="686" y="420" width="638" height="99" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<g transform="translate(703,449) scale(1.0)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
+<text x="742" y="464" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#A82E2E" text-anchor="start">Check the copay amount</text>
+<text x="686" y="572" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">Enter an amount greater than zero with no more</text>
+<text x="686" y="601" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">than two decimal places.</text>
+<text x="686" y="675" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">Correct the highlighted field before submitting.</text>
+<rect x="686" y="752" width="252" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="802.0" y="782.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Return to booking</text>
+<g transform="translate(908,766.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<g id="result-request-failed" inkscape:groupmode="layer" inkscape:label="Transaction / request-failed" style="display:none">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<rect x="115" y="924" width="492" height="54" rx="9" fill="#117C76" stroke="none" stroke-width="1.1"/>
+<text x="361.0" y="957.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle">Retry the same booking</text>
+<rect x="686" y="420" width="638" height="99" rx="10" fill="#FDE9E7" stroke="none" stroke-width="1.1"/>
+<g transform="translate(703,449) scale(1.0)" fill="none" stroke="#A82E2E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 12 3 L 22 21 H 2 Z M 12 9 V 14 M 12 18 H 12.1"/></g>
+<text x="742" y="464" font-family="Arial, DejaVu Sans, sans-serif" font-size="21" font-weight="600" fill="#A82E2E" text-anchor="start">We could not confirm your booking</text>
+<text x="686" y="572" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">Keep the same booking details and retry.</text>
+<text x="686" y="601" font-family="Arial, DejaVu Sans, sans-serif" font-size="18" font-weight="400" fill="#173C3A" text-anchor="start">Check your appointments before starting a new request.</text>
+<text x="686" y="675" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="400" fill="#607B79" text-anchor="start">The result may be uncertain; do not submit a different booking.</text>
+<rect x="686" y="752" width="252" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="802.0" y="782.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Return to booking</text>
+<g transform="translate(908,766.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<g id="state-loading" inkscape:groupmode="layer" inkscape:label="Transaction / submitting" style="display:none">
+<rect x="658" y="385" width="694" height="627" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="686" y="446" font-family="Arial, DejaVu Sans, sans-serif" font-size="23" font-weight="600" fill="#173C3A" text-anchor="start">Confirming your booking…</text>
+<text x="686" y="483" font-family="Arial, DejaVu Sans, sans-serif" font-size="15" font-weight="400" fill="#607B79" text-anchor="start">Please wait. Keep these booking details unchanged.</text>
+<rect x="115" y="924" width="492" height="54" rx="9" fill="#E1F3F0" stroke="none" stroke-width="1.1"/>
+<text x="361.0" y="957.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#607B79" text-anchor="middle">Booking…</text>
+</g>
+<g id="state-empty" inkscape:groupmode="layer" inkscape:label="Transaction / no accepting clinics" style="display:none">
+<text x="1062" y="22" font-family="Arial, DejaVu Sans, sans-serif" font-size="14" font-weight="600" fill="#607B79" text-anchor="start">Selected clinic</text>
+<rect x="1062" y="32" width="330" height="49" rx="9" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="1077" y="65" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#173C3A" text-anchor="start">Select a clinic</text>
+<g transform="translate(1360,47) scale(0.7916666666666666)" fill="none" stroke="#173C3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 7 10 L 12 15 L 17 10"/></g>
+<rect x="88" y="316" width="1264" height="727" rx="14" fill="#FFFFFF" stroke="#D8E5E3" stroke-width="1.1"/>
+<text x="116" y="380" font-family="Arial, DejaVu Sans, sans-serif" font-size="25" font-weight="600" fill="#173C3A" text-anchor="start">No accepting clinics available</text>
+<text x="116" y="425" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#607B79" text-anchor="start">Choose another clinic in Browse or try again later.</text>
+<text x="116" y="454" font-family="Arial, DejaVu Sans, sans-serif" font-size="17" font-weight="400" fill="#607B79" text-anchor="start">Booking is unavailable until an accepting clinic is selected.</text>
+<rect x="116" y="526" width="225" height="48" rx="9" fill="#FFFFFF" stroke="#117C76" stroke-width="1.1"/>
+<text x="218.5" y="556.0" font-family="Arial, DejaVu Sans, sans-serif" font-size="16" font-weight="600" fill="#117C76" text-anchor="middle">Browse clinics</text>
+<g transform="translate(311,540.0) scale(0.8333333333333334)" fill="none" stroke="#117C76" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M 4 12 H 20 M 14 6 L 20 12 L 14 18"/></g>
+</g>
+<text x="88" y="1127" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="start">Illustrative layout values only. Amounts are HSA account units; the schema specifies no currency.</text>
+<text x="1352" y="1127" font-family="Arial, DejaVu Sans, sans-serif" font-size="12" font-weight="400" fill="#607B79" text-anchor="end">02 / 06</text>
+</svg>

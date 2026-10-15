@@ -19,7 +19,7 @@ export default defineConfig({
             : {},
     },
     webServer: {
-        command: 'npm run dev -- --port 5186',
+        command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5186 --strictPort',
         url: 'http://localhost:5186',
         reuseExistingServer: !process.env.CI,
     },

@@ -1,3 +1,4 @@
+import EmptyState from '../common/EmptyState';
 import { useEffect, useState } from 'react';
 import {
     Box,
@@ -101,20 +102,22 @@ const BarChart = ({ title, rows, labelKey, total }) => {
     const maximum = Math.max(1, ...rows.map((row) => number(row.count)));
     const share = (count) => (total ? Math.round((number(count) / total) * 100) : 0);
     return (
-        <Panel sx={{ p: 1.5, minHeight: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
-            <Typography sx={{ mb: 0.75, flexShrink: 0, fontWeight: 600 }}>{title}</Typography>
+        <Panel sx={{ p: { xs: 1.5, md: 2 }, minHeight: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Typography component='h2' sx={{ mb: 1, flexShrink: 0, fontSize: { xs: 16, md: 18 }, lineHeight: 1.35, fontWeight: 600 }}>{title}</Typography>
             <ScrollArea sx={{ flex: 1 }}>
-                <Stack sx={{ gap: 0.4 }}>
+                <Stack sx={{ minHeight: '100%', justifyContent: 'space-evenly', gap: 0.5 }}>
+                    {!rows.length && <EmptyState title='No tags available' message='Feedback tags will appear here when they are recorded.' compact />}
                     {rows.map((row, index) => (
                         <Stack
                             key={String(row[labelKey]) + index}
                             direction='row'
-                            sx={{ alignItems: 'center', gap: 1.25, minHeight: 20 }}
+                            sx={{ alignItems: 'center', gap: { xs: 1, md: 1.5 }, minHeight: { xs: 22, md: 24 }, flexShrink: 0 }}
                         >
                             <Typography
                                 variant='body2'
                                 sx={{
-                                    width: labelKey === 'rating' ? 52 : 125,
+                                    width: labelKey === 'rating' ? { xs: 52, md: 62 } : { xs: 110, md: 135 },
+                                    fontSize: { xs: 14, md: 16 },
                                     flexShrink: 0,
                                     overflowWrap: 'anywhere',
                                 }}
@@ -126,7 +129,8 @@ const BarChart = ({ title, rows, labelKey, total }) => {
                             <Box
                                 sx={(theme) => ({
                                     flex: 1,
-                                    height: 12,
+                                    height: { xs: 14, md: 18 },
+                                    minWidth: 16,
                                     bgcolor: alpha(theme.palette.primary.main, 0.06),
                                     borderRadius: 1,
                                 })}
@@ -143,7 +147,9 @@ const BarChart = ({ title, rows, labelKey, total }) => {
                             <Typography
                                 variant='body2'
                                 sx={{
-                                    width: total ? 84 : 40,
+                                    width: total ? { xs: 84, md: 116 } : { xs: 40, md: 64 },
+                                    flexShrink: 0,
+                                    fontSize: { xs: 14, md: 16 },
                                     textAlign: 'right',
                                     fontWeight: 600,
                                     whiteSpace: 'nowrap',
@@ -155,6 +161,7 @@ const BarChart = ({ title, rows, labelKey, total }) => {
                                         component='span'
                                         variant='body2'
                                         color='text.secondary'
+                                        sx={{ fontSize: 'inherit' }}
                                     >
                                         {' '}
                                         · {share(row.count)}%
@@ -196,7 +203,7 @@ export const CatalogDocument = ({ record }) => {
     if (record.id) extras.catalog_id = record.id;
     return (
         <>
-            <Typography sx={{ fontWeight: 600, mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 600, mb: 2, fontSize: { xs: 16, md: 20 } }}>
                 {record.specialty || 'Unspecified specialty'}
                 {record.physician && (
                     <Typography component='span' color='text.secondary' sx={{ fontWeight: 400 }}>
@@ -206,10 +213,10 @@ export const CatalogDocument = ({ record }) => {
                 )}
             </Typography>
             <Box
-                sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
+                sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: { xs: 2, lg: 3 } }}
             >
-                <Box>
-                    <Typography variant='body2' sx={{ fontWeight: 600, mb: 0.5 }}>
+                <Box sx={{ p: { xs: 1.5, lg: 2.5 }, bgcolor: 'action.hover', borderRadius: 2 }}>
+                    <Typography variant='body2' sx={{ fontWeight: 600, mb: 1.5 }}>
                         Medication details
                     </Typography>
                     <DocumentValue
@@ -218,15 +225,15 @@ export const CatalogDocument = ({ record }) => {
                         labels={FIELD_LABELS}
                     />
                 </Box>
-                <Box>
-                    <Typography variant='body2' sx={{ fontWeight: 600 }}>
+                <Box sx={{ p: { xs: 1.5, lg: 2.5 }, bgcolor: 'action.hover', borderRadius: 2 }}>
+                    <Typography variant='body2' sx={{ fontWeight: 600, mb: 1.5 }}>
                         Availability slots
                     </Typography>
                     {readableSlots ? (
                         <Table
                             size='small'
                             aria-label='Availability slots'
-                            sx={{ '& td, & th': { px: 1, py: 0.2, fontSize: 12 } }}
+                            sx={{ '& td, & th': { px: { xs: 1, md: 1.5 }, py: { xs: 0.75, md: 1.25 }, fontSize: { xs: 14, md: 16, xl: 18 }, lineHeight: 1.5 } }}
                         >
                             <TableHead>
                                 <TableRow>
@@ -251,12 +258,12 @@ export const CatalogDocument = ({ record }) => {
                 </Box>
             </Box>
             {Object.keys(extras).length > 0 && (
-                <Box component='details' sx={{ mt: 0.25 }}>
+                <Box component='details' sx={{ mt: 2 }}>
                     <Typography
                         component='summary'
                         color='primary.main'
                         variant='body2'
-                        sx={{ cursor: 'pointer', minHeight: 24, py: 0 }}
+                        sx={{ cursor: 'pointer', minHeight: 36, py: 0.5 }}
                     >
                         Additional fields
                     </Typography>
@@ -284,9 +291,6 @@ const Reviews = () => {
         .filter((row) => number(row.rating) >= 4)
         .reduce((sum, row) => sum + number(row.count), 0);
     const positiveShare = total ? Math.round((positive / total) * 100) : 0;
-    useEffect(() => {
-        setPage(1);
-    }, [specialty]);
     const summary = (
         <Panel
             sx={(theme) => ({
@@ -299,7 +303,8 @@ const Reviews = () => {
                 resource={reviews}
                 compact
                 empty={data?.total_reviews === 0}
-                emptyMessage='No reviews available.'
+                emptyMessage='Patient feedback will appear here when reviews are available.'
+                emptyTitle='Feedback is on its way'
             >
                 <Stack
                     direction='row'
@@ -364,7 +369,7 @@ const Reviews = () => {
                 gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
                 gap: 1.5,
                 minHeight: 0,
-                flex: compact ? '1 1 0' : '0 0 166px',
+                flex: compact ? '1 1 0' : '0 0 clamp(166px, 23vh, 260px)',
             }}
         >
             <State
@@ -372,6 +377,7 @@ const Reviews = () => {
                 compact
                 empty={data?.total_reviews === 0}
                 emptyMessage='Charts will appear when reviews exist.'
+                emptyTitle='No feedback to chart yet'
             >
                 <BarChart
                     title='Rating distribution'
@@ -390,7 +396,9 @@ const Reviews = () => {
     const catalog = (
         <Panel
             sx={{
-                p: 1.5,
+                p: { xs: 1.5, md: 2.5, xl: 3 },
+                '@media (min-width: 600px) and (max-height: 850px)': { paddingBlock: 1 },
+                '& .MuiTypography-body2': { fontSize: { xs: 14, md: 16, xl: 18 }, lineHeight: 1.6 },
                 flex: '1 1 0',
                 minHeight: 0,
                 display: 'flex',
@@ -406,7 +414,7 @@ const Reviews = () => {
                     flexShrink: 0,
                 }}
             >
-                <Typography sx={{ fontWeight: 600, flexShrink: 0 }}>Medical catalog</Typography>
+                <Typography sx={{ fontWeight: 600, flexShrink: 0, fontSize: { xs: 16, md: 20 } }}>Medical catalog</Typography>
                 {/* Specialty chips share the title row on wide screens to leave room for the entry. */}
                 <Stack
                     direction='row'
@@ -428,7 +436,7 @@ const Reviews = () => {
                             color='primary'
                             variant={specialty === chip.specialty ? 'filled' : 'outlined'}
                             aria-pressed={specialty === chip.specialty}
-                            onClick={() => setSpecialty(chip.specialty)}
+                            onClick={() => { setSpecialty(chip.specialty); setPage(1); }}
                             sx={{ flexShrink: 0 }}
                         />
                     ))}
@@ -436,13 +444,13 @@ const Reviews = () => {
                 <Typography
                     variant='body2'
                     color='text.secondary'
-                    sx={{ fontSize: 12, flexShrink: 0, display: { xs: 'none', md: 'block' } }}
+                    sx={{ fontSize: 14, flexShrink: 0, display: { xs: 'none', md: 'block' } }}
                 >
                     Read-only reference
                 </Typography>
             </Stack>
             <ScrollArea
-                sx={{ flex: 1, pr: 0.5 }}
+                sx={{ flex: 1, pr: 0.5, pt: 1 }}
                 data-testid='catalog-content'
                 tabIndex={0}
                 aria-label='Medical catalog document'
@@ -452,6 +460,8 @@ const Reviews = () => {
                     compact
                     empty={catalogs.data?.items.length === 0}
                     emptyMessage='No catalog entries for this specialty.'
+                    emptyTitle='No references for this specialty'
+                    emptyAction={{ label: 'Show all specialties', onClick: () => { setSpecialty(''); setPage(1); } }}
                 >
                     {record && <CatalogDocument record={record} />}
                 </State>

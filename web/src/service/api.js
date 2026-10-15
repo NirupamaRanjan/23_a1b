@@ -24,9 +24,14 @@ const MESSAGES = {
     NO_PATIENT_SELECTED: 'Choose a patient in the header to see an audit trail.',
     INVALID_DATE_RANGE: 'The start date must be on or before the end date.',
     DATE_OUTSIDE_WINDOW:
-        'Revenue analytics covers the last 30 days only. Choose dates in that range.',
+        'Choose dates on or before today (UTC). Historical dates are supported.',
     INVALID_MONTH: 'Choose a month to see its discharge summary.',
     REFRESH_IN_PROGRESS: 'Another summary refresh is running. Try again in a moment.',
+    MONGO_SETUP_INCOMPLETE: 'MongoDB map setup is incomplete. From the project root run python mongo/setup.py, then retry.',
+    MONGO_PERMISSION_DENIED: 'The MongoDB account cannot run this operation. Check its database permissions.',
+    MONGO_AUTH_FAILED: 'MongoDB rejected the configured credentials. Check the active .env.',
+    MONGO_VERSION_UNSUPPORTED: 'The MongoDB server does not support this query. Use MongoDB 7 or newer.',
+    MONGO_QUERY_FAILED: 'The MongoDB query failed. Check the backend log for the server error code.',
     DOCUMENT_TOO_LARGE: 'This catalog document is too large to display.',
     VALIDATION_ERROR:
         'Some of the values sent were not valid. Check what you entered and try again.',

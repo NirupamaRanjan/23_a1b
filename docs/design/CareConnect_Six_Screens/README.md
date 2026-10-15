@@ -1,5 +1,14 @@
 # CareConnect - exactly six screen designs
 
+> **Original design-stage record.** These SVGs were created before the final implementation.
+> Their visible artboards and original assumptions below have been retained. The implemented app
+> now includes a named Nurses directory, durable refresh metadata, corrected latest-ping behavior,
+> specialty chips and a full-width responsive workspace with 16–24 px gutters. Earlier statements
+> about missing collections/metadata or fixed artboard margins describe the original design stage.
+> See [current users/layout](../users.md), [implementation review](../../review_fixes.md),
+> [platform/layout update](../../layout_platform_update.md) and [verification](../../verification.md).
+
+
 Design-only handoff. No application code, database records or project ZIP were changed. The six SVGs are editable vector mockups, not executable application screens. Sample names, IDs, amounts, timestamps and graphs exist only in these design assets.
 
 ## Files and count
@@ -13,7 +22,7 @@ The `svg/` folder contains exactly six artboards:
 5. `05_map.svg` - selectable origin, 5 km circle, distance-ordered nurses and live-poll status.
 6. `06_reviews.svg` - three review facets and flexible MedicalCatalogs content inside this screen.
 
-There is no separate dashboard, detail, catalog, actor-selection, login or More screen. The companion PDF has exactly six pages, one per screen, without a cover page. Browse tabs, failure states and loading/empty/error layers reuse their existing artboard; they are not extra pages or navigation destinations.
+There is no separate dashboard, detail, catalog, actor-selection, login or More screen. This package supplies the six SVG wireframes; a companion PDF is not included. Browse tabs, failure states and loading/empty/error layers reuse their existing artboard; they are not extra pages or navigation destinations.
 
 ## Visual reference
 

@@ -9,6 +9,8 @@ from app.main import create_app
 from app.models import BookingInput
 from conftest import switch
 
+pytestmark = pytest.mark.usefixtures('reset_data')
+
 
 def book(client,amount='25.00',clinic=1,key=None):
     return client.post('/api/v1/appointments',json={'clinic_id':clinic,'copay_amount':amount},
@@ -141,7 +143,7 @@ def test_analytics_window_dense_rank_and_durable_refresh(client,database):
                 cur.execute("INSERT INTO appointments(patient_id,clinic_id,copay_amount,status,created_at) VALUES (1,%s,%s,'DISCHARGED',%s)",(clinic,amount,today-timedelta(days=offset)))
     series=client.get('/api/v1/analytics/revenue',params={'clinic_id':1,'start_date':str(today),'end_date':str(today)}).json()
     assert series['items'][0]['moving_avg_7d']=='20.00'  # AVG of 3 recorded days, not zero-filled days.
-    assert series['total_copay_revenue']=='60.00'
+    assert series['total_copay_revenue']=='30.00'
     ranked=client.get('/api/v1/analytics/ranking',params={'date':str(today)}).json()
     assert [row['rank_by_revenue'] for row in ranked['items']]==[1,1]
     assert client.post('/api/v1/analytics/monthly/refresh').status_code==403
@@ -208,3 +210,82 @@ def test_facet_empty_and_flexible_catalog(client,database):
     assert chips==[{'specialty':'Cardiology','count':2},{'specialty':'General <script>','count':1}]
     assert client.get('/api/v1/catalogs?specialty=Cardiology').json()['total']==2
     assert client.get('/api/v1/catalogs?specialty=Cardio').json()['total']==0
+
+
+def test_out_of_range_paths_and_maximum_date_are_validation_errors(client):
+    for record_id in (-1, 0, 2147483648):
+        for entity in ('patients', 'clinics', 'appointments'):
+            assert client.get(f'/api/v1/{entity}/{record_id}').status_code == 422
+        response = client.patch(f'/api/v1/appointments/{record_id}/status',
+            json={'status':'IN_CONSULTATION','expected_status':'WAITING'})
+        assert response.status_code == 422
+    assert client.get('/api/v1/me/audit?end_date=9999-12-31').status_code == 422
+
+
+def test_manual_bootstrap_indexes_are_idempotent_and_preserve_data(database):
+    from mongo.setup import apply_schema
+    db, _ = database
+    row = {'nurse_id':99, 'is_active':True,
+           'location':{'type':'Point','coordinates':[-73.98513,40.748817]},
+           'created_at':datetime.now(timezone.utc)}
+    inserted = db.mongo.NursePings.insert_one(row).inserted_id
+    apply_schema(db.mongo)
+    apply_schema(db.mongo)
+    assert db.mongo.NursePings.find_one({'_id':inserted})['nurse_id'] == 99
+    info = db.mongo.NursePings.index_information()
+    assert any(value['key'] == [('nurse_id',1),('created_at',-1),('_id',-1)] for value in info.values())
+    assert any(value.get('expireAfterSeconds') == 7200 for value in info.values())
+    from pymongo.errors import WriteError
+    with pytest.raises(WriteError) as rejected:
+        db.mongo.NursePings.insert_one({**row, '_id': 'invalid-ping', 'is_active': 'yes'})
+    assert rejected.value.code == 121
+    from mongo.setup import check_schema
+    assert check_schema(db.mongo) == []
+
+
+def test_concurrent_different_booking_keys_cannot_double_debit(client,database):
+    db, _ = database
+    from app.services import CareService
+    service = CareService(db)
+    actor = {'role':'patient','actor_id':1,'patient_id':1}
+    body = BookingInput(clinic_id=1,copay_amount='10.00')
+    def attempt(_):
+        try:
+            service.book(actor,body,uuid4())
+            return 'ok'
+        except psycopg2.IntegrityError as error:
+            return error.pgcode
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        assert sorted(executor.map(attempt,range(2))) == ['23505','ok']
+    assert client.get('/api/v1/me/audit').json()['total'] == 1
+    assert client.get('/api/v1/session').json()['patient']['hsa_balance'] == '990.00'
+
+
+def test_catalog_specialty_route_enforces_the_same_bounds(client):
+    assert client.get('/api/v1/catalogs',params={'specialty':'a'*121}).status_code == 422
+    assert client.get('/api/v1/catalogs/specialties').status_code == 200
+
+
+def test_missing_map_index_is_diagnosed_and_root_setup_repairs_it(client, database):
+    from mongo.setup import apply_schema
+    db, _ = database
+    db.mongo.NursePings.drop_index('location_2dsphere')
+    try:
+        response = client.get('/api/v1/nurses/nearby?latitude=17.445376&longitude=78.346144')
+        assert response.status_code == 503
+        assert response.json() == {'code': 'MONGO_SETUP_INCOMPLETE'}
+        apply_schema(db.mongo)
+        response = client.get('/api/v1/nurses/nearby?latitude=17.445376&longitude=78.346144')
+        assert response.status_code == 200 and response.json()['items'] == []
+    finally:
+        apply_schema(db.mongo)
+
+
+def test_map_selects_location_when_another_geo_index_exists(client, database):
+    db, _ = database
+    name = db.mongo.NursePings.create_index([('secondary_location', '2dsphere')])
+    try:
+        response = client.get('/api/v1/nurses/nearby?latitude=17.445376&longitude=78.346144')
+        assert response.status_code == 200
+    finally:
+        db.mongo.NursePings.drop_index(name)

@@ -1,3 +1,4 @@
+import EmptyState from './EmptyState';
 import {
     Alert,
     Box,
@@ -82,6 +83,8 @@ export const State = ({
     resource,
     empty = false,
     emptyMessage = 'No records available.',
+    emptyTitle = 'No matching results',
+    emptyAction,
     children,
     compact = false,
 }) => {
@@ -109,9 +112,7 @@ export const State = ({
         );
     if (empty)
         return (
-            <Box role='status' sx={{ py: compact ? 1 : 3 }}>
-                <Typography color='text.secondary'>{emptyMessage}</Typography>
-            </Box>
+            <EmptyState title={emptyTitle} message={emptyMessage} action={emptyAction} compact={compact} />
         );
     return children;
 };

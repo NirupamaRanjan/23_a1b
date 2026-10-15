@@ -1,37 +1,138 @@
 # CareConnect handover note
 
-## Sources and scope
+## Inherited application
 
-Inherited repository: https://github.com/NirupamaRanjan/23_a1b/tree/a2-fixes, commit `22efe1638f8e2c53314a95d36b9424d7944f3740`. The existing frontend is the user's `CareConnect_React_Six_Screens.zip`; its six React routes and API client are retained. The supplied PDF is titled Assignment 2 despite its filename Assignment1b.pdf. The style reference is https://github.com/niral261/spotify2MP3, commit `962bba375ae182822b839d561c875f5c0135878d`.
+This update starts from the user's latest uploaded CareConnect ZIP. PostgreSQL owns patients,
+clinics, appointments and wallet audit history; MongoDB medical_db owns nurse telemetry, review
+facets and medical catalogs. The uploaded SQL session/retry/refresh support and nurse-directory
+implementation are retained. No new database tables, columns or collections were added by this
+update. Original SQL business rules, booking procedure, audit immutability and 5 km latest/active
+nurse-search semantics remain in place.
 
-## What worked
+Inherited source reference supplied in the project: 23_a1b/a2-fixes,
+commit 22efe1638f8e2c53314a95d36b9424d7944f3740. Add the final team repository and commit
+in the root README before submission; do not invent contribution names.
 
-The relational schema, partial active-appointment unique index, positive copay/nonnegative HSA checks, audit trigger, append-only audit guards and monotonic appointment status trigger are coherent. The procedure locks the patient before debiting and inserts WAITING appointments atomically. Its failed unique-index insert rolls back both the debit and trigger row. The calendar RANGE analytics query and DENSE_RANK return ties correctly. The materialized view has the unique index required for concurrent refresh. MongoDB provides validators, a 2dsphere index, two-hour TTL, review facet and flexible catalogs. Original Part A scripts and seeders are retained.
+## Changes and reasons
 
-## Gaps and changes
+- Map requests the device's current browser position on entry; it waits for a usable origin
+  before requesting nurses. It shows reported position accuracy. Denial, timeout or missing
+  browser support has a clear message and manual/clinic recovery. Pending callbacks cannot
+  override a manual selection or update an unmounted screen. Switching the selected clinic
+  does not silently move a device/manual origin; Use selected clinic is explicit.
+- Location generation shares inland Indian service circles around Hyderabad and other Telangana
+  cities, Andhra Pradesh, Karnataka and Maharashtra. Fresh SQL clinic coordinates, nurse homes,
+  walks, fallback points and emitted ping checks all use this constraint. Faker names use en_IN.
+  This deliberately generates a subset of India and is not a claim of nationwide nurse coverage.
+- Existing demo coordinates can be relocated with data_generation/relocate_india.py. Its default
+  is a read-only preview; --apply updates locations outside these service areas. It preserves
+  IDs, names, duty flags, timestamps, patients, appointments, balances, audit records, reviews
+  and catalogs. It does not reseed or freshen old timestamps. Stop demo telemetry during migration.
+  It is rerunnable; PostgreSQL and Mongo writes do not form one atomic transaction.
+- NursePings validation accepts either the existing active boolean or canonical is_active boolean,
+  so legacy field names also work when location-only migration updates a document. The API's
+  existing active/name compatibility and canonical precedence are retained.
+- Analytics opens with both chart date fields populated and sends the same explicit range.
+  Dates are UTC; the initial range is the last 30 calendar dates including today. Clearing or
+  invalidating a date prevents displaying a misleading chart. Thirty days is only the default: the chart and ranking support older stored history. The revenue card now sums the selected chart period; monthly discharges follow the month picker.
+- Audit starts with the patient's last 30 calendar dates including today. Applied dates are stored
+  per patient in per-tab sessionStorage and restored on navigation and refresh. Unsubmitted edits
+  are visibly labelled; Apply dates updates all period results and resets pagination. Last 30 days
+  resets the range. Current HSA balance always means the latest balance; opening balance/count
+  use the applied range. Browser storage is a UI preference, never proof of authorization.
+- API resource state is keyed by actor/query so an earlier response cannot momentarily appear as
+  another patient's/date range's data. Existing request cancellation and permissions are retained.
+- Reusable local teal vector empty states replace sparse no-results messages and selection
+  placeholders across all six screens. Actions clear filters, reset dates, refresh results or
+  show all specialties as appropriate. Loading and request failure are separate states.
+- docs contains only this handover, api_endpoints.md and design/. Design includes user descriptions,
+  six supplied SVG wireframes (coordinate examples updated to India) and the user's Figma URL.
+  The Figma file was inaccessible here; SVGs are not claimed to be new Figma exports.
 
-The inherited repository contains no web or HTTP API; the recovered frontend describes a contract rather than supplying a backend. We added a thin FastAPI adapter with class-based services, a bounded PostgreSQL connection pool, PyMongo, safe public failures, trusted server sessions, CSRF verification, parameterized SQL, literal search and stable pagination. Booking captures the exact trigger row while holding the patient lock. Additive `sql/07_api_support.sql` persists opaque sessions, booking idempotency results and real refresh timestamps, and adds browsing/audit indexes. No Part A table, stored procedure or existing trigger was rewritten. Analytics executes `sql/06_window_analytics.sql` rather than implementing window functions in Python.
+## Upgrade and demo data
 
-The original geo pipeline keeps the nearest historical ping per nurse; that can show a nurse who has since gone offline or left the radius. The API retains $geoNear and the 5 km index-based candidate search, selects the latest nearby candidate, then uses $lookup to verify that it is the nurse's latest ping across all locations/statuses. It enforces freshness explicitly while TTL deletion catches up. The `(nurse_id, created_at, _id)` index in `mongo/01_collections_and_indexes.js` supports this check. The assigned standalone workflow files remain unchanged for comparison.
+Extract into a new folder, preserve the existing active .env and install dependencies with the
+same Python interpreter used for the API. From the project root:
 
-The inherited Assignment 1 README described `IN CONSULTATION`; the DDL, API and current README use `IN_CONSULTATION`. Mongo seeding already replaces collections and relational seeding already disables ledger guards for a privileged reset, despite outdated inherited README claims. Bootstrap runs these destructive seeders only when the respective store is empty; it does not reseed an existing store. Fresh-ping tooling appends telemetry without resetting reviews/catalogs.
+```powershell
+python -m pip install -r api/requirements.txt -r data_generation/requirements.txt
+python mongo/setup.py
+python data_generation/relocate_india.py
+python data_generation/relocate_india.py --apply
+python data_generation/fresh_pings.py --loop 30
+```
 
-## Suggestions
+Preview first, then apply the requested demo location migration. For an existing populated system,
+do not invoke the destructive postgres seeder or Mongo --reset-data. Bootstrap preserves populated
+stores and is appropriate for a genuinely fresh install. Full setup/launch instructions stay in the
+root README. Restart API/frontend from the new folder and refresh the browser. For Docker, use
+`docker compose --env-file .env.docker run --rm api python /app/data_generation/relocate_india.py --apply`
+after the services are ready (the image includes the root source at /app); use the corresponding
+container command for ongoing telemetry. See docker-compose.yml for your host port/volume settings.
 
-Keep documentation literals synchronized with DDL; make script return shapes explicit; add generated-ID outputs to the procedure if a future API requires them; document that the 7-day average uses only recorded revenue days; separate development reset tools from application credentials; retain current-ping semantics in future telemetry changes. The demo uses explicit local actor switching, not production authentication. Full production identity integration is outside the assignment.
+Browser location requires permission and HTTPS or localhost. Actual accuracy depends on the device.
+India-only generation does not guarantee active nurses within 5 km of every user; real telemetry
+is required for real availability. The two-hour ping freshness/TTL and latest-offline exclusion are
+intentional. Demo telemetry must run to keep synthetic pings fresh after expiry.
 
-A live-browser check also found that React StrictMode could race two initial session requests. The API client now shares an in-flight session request; a regression test protects cookie/CSRF alignment while preserving the six-screen UI.
+## Verification performed for this update
 
-## Assignment 2 integration fixes
+- 34 backend/configuration/geography/migration tests passed against PostgreSQL 16 and MongoDB 7.0.16.
+  Geography tests include 100,000 walk steps, service-area edge rejection, foreign legacy inputs,
+  and a read-only preview/idempotent migration that preserves patient, appointment and audit data.
+- 21 frontend unit tests passed, including UTC/leap-date defaults, independent patient preferences,
+  invalid saved data and empty/loading/error separation.
+- 34 isolated Chromium browser scenarios passed: automatic location, permission denial, timeout,
+  unavailable location, late callbacks, initial query/date agreement, navigation/reload/patient
+  date restoration, all six empty flows, existing booking/map/paging behaviour and responsive
+  layouts down to 320 px and up to 2560 px.
+- Node 22.14 production build passed. The live six-screen booking/debit/audit/status/discharge/
+  analytics-refresh workflow completed against the real seeded local databases.
+- A full fresh seed produced 1,000 patients, 50 clinics, 50,000 appointments, 100,000 audit rows,
+  500 nurse homes and 500,000 pings. Every generated clinic/home/ping was checked against the
+  permitted inland service areas. Hyderabad returned 10 active nurses; a fresh telemetry round
+  inserted 500 further India-only pings. A relocation preview found zero out-of-area generated points.
 
-- Repository layout follows the suggested structure: `sql/`, `mongo/`, `data_generation/` and `docs/` at the root. The API, bootstrap script, tests, `api/Dockerfile` (built from the repository root) and the root `docker-compose.yml` read those folders.
-- `sql/07_api_support.sql` is part of every setup path (bootstrap, tests, manual steps). The latest-ping-per-nurse index lives in `mongo/01_collections_and_indexes.js`.
-- One root `.env` (`.env.example`) holds every setting for `psql`, the seeders and the API.
-- Seeders use Faker for patient, clinic, nurse and physician names. A `Nurses` collection keeps nurse names beyond the 2-hour ping TTL; pings carry `nurse_name` and `scripts/fresh_pings.py` reuses it. The Mongo seeder again replaces old data and seeds the 40 `MedicalCatalogs` documents.
-- The PostgreSQL seeder mixes HSA debits with credits and spreads the trigger-generated audit timestamps over the seeded 60 days so the Audit trail date filter is meaningful; running balances are unchanged.
-- Nurse telemetry: every nurse has a home area near one of the clinics (`data_generation/nurse_telemetry.py`); seeded pings form small movements over the last 100 minutes, and `scripts/fresh_pings.py [--loop N]` continues them, so every clinic has nurses within 5 km and pings no longer expire all at once.
-- About 20% of clinics are seeded as not accepting patients (clinic 1 always accepts).
-- The Audit trail lists newest entries first.
-- Error responses use specific codes (for example `CLINIC_NOT_FOUND`, `PATIENT_ONLY`, `STAFF_ONLY`, `OTHER_CLINIC`, `INVALID_DATE_RANGE`, `DATE_OUTSIDE_WINDOW`, `POSTGRES_UNAVAILABLE`, `MONGO_UNAVAILABLE`, `DATABASE_SETUP_INCOMPLETE`) and the frontend explains each one instead of a generic message.
-- UI: the Map lists nurses by name, Analytics explains that only clinic staff can refresh the materialized-view summary and keeps the ranking date inside the Clinic ranking section, and a patient's Patients tab in Browse has no search box (it only contains their own record). No colours, fonts or layout were changed.
-- Reviews screen: the summary shows the average as stars, the share of patients who rated 4–5 stars and the number of reviews; the rating distribution shows percentages; catalog entries show specialty and physician first, readable field names and the catalog id under "Additional fields"; specialty chips (from `GET /catalogs/specialties`) replace free-text search.
+These are Linux test results, not a native Windows, Docker engine, real-device GPS or the user's
+local database test. Browser geolocation is simulated through Chromium's location facilities in
+automated checks. Figma frame contents and its sharing permissions were not verified.
+
+## Remaining submission items
+
+Add genuine team contributions, final repository/commit, reviewed demo link and any screenshots
+required by the instructor in the root README. Ensure reviewers can open the supplied Figma link.
+The supplied folder screenshot did not mandate SVG versus Figma; both references are included.
+Demo actor switching remains an assignment convenience, not production authentication.
+
+
+## Analytics history correction
+
+The earlier UI/API/SQL all restricted revenue dates to the latest 30 days. The initial view still
+uses 30 calendar dates, but arbitrary past dates are now selectable through today. SQL 06 remains
+the original assignment reference; SQL 08 is a SELECT-only history variant read by AnalyticsService.
+It groups discharged revenue in UTC and keeps the seven-calendar-day RANGE average and DENSE_RANK.
+Visible date filtering occurs after the window calculation, so shortening the displayed interval
+does not erase the preceding six days needed for the moving average. The revenue card now sums
+exactly the selected clinic's displayed-period daily totals. No records or statuses are fabricated.
+Monthly discharges use their independent month selector and materialized-view refresh.
+
+Install by copying the updated source (including sql/08_analytics_history.sql) and restarting the
+API/frontend. No database setup, migration or reseed is required for this correction.
+To diagnose zero values against the actual API connection, run from the project root:
+
+```powershell
+python scripts/check-analytics.py --clinic-id 13
+```
+
+Optional --start-date/--end-date flags accept ISO dates. The command uses a read-only PostgreSQL
+transaction and reports database/server date, statuses, date coverage, selected-clinic period
+counts/revenue and clinics with discharged history. It never reseeds, renames or changes status.
+No matching DISCHARGED appointments means zero is correct; refreshing the monthly view does not
+create appointments or revenue. The user's local database has not been inspected remotely.
+
+Verification for this correction: 36 backend tests passed, including 90-day-old revenue, correct
+seven-day lookback, tied historical ranks, period totals, empty data and invalid/future ranges.
+21 frontend unit tests and the Node 22.14 production build passed. Both focused Analytics browser
+scenarios passed, including dates 90–120 days in the past and the initial default/query match.
+The read-only diagnostic also ran against the disposable database. Earlier screen/geography
+checks above describe the preceding release, not additional reruns for this analytics-only change.

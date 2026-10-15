@@ -6,7 +6,7 @@ services:
       POSTGRES_DB: careconnect
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-    ports: ["127.0.0.1:5432:5432"]
+    ports: ["127.0.0.1:${POSTGRES_PORT:-55432}:5432"]
     volumes: ["postgres_data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d careconnect"]
@@ -15,38 +15,33 @@ services:
       retries: 30
   mongo:
     image: mongo:7.0
-    ports: ["127.0.0.1:27017:27017"]
+    ports: ["127.0.0.1:${MONGO_PORT:-57017}:27017"]
     volumes: ["mongo_data:/data/db"]
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
       interval: 3s
       timeout: 3s
       retries: 30
-  mongo-init:
-    image: mongo:7.0
-    depends_on:
-      mongo: {condition: service_healthy}
-    environment:
-      CARECONNECT_MONGO_DB: careconnect
-    volumes: ["./mongo:/scripts:ro"]
-    entrypoint: ["sh", "-c"]
-    command: ["mongosh mongodb://mongo:27017/ /scripts/01_collections_and_indexes.js"]
   seed:
     build:
-      # Built from the repository root so the image can include sql/ and data_generation/.
       context: .
       dockerfile: api/Dockerfile
     depends_on:
       postgres: {condition: service_healthy}
-      mongo-init: {condition: service_completed_successfully}
+      mongo: {condition: service_healthy}
     environment: &api_environment
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@postgres:5432/careconnect
+      # Build the URI in Python so reserved password characters are escaped once.
+      PGHOST: postgres
+      PGPORT: "5432"
+      PGDATABASE: careconnect
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
       CARECONNECT_MONGO_URI: mongodb://mongo:27017/
-      CARECONNECT_MONGO_DB: careconnect
+      CARECONNECT_MONGO_DB: medical_db
       CARECONNECT_DEMO_MODE: "true"
       CARECONNECT_COOKIE_SECURE: "false"
-      CARECONNECT_ALLOWED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
-    command: ["python", "scripts/bootstrap.py"]
+      CARECONNECT_ALLOWED_ORIGINS: http://localhost:${WEB_PORT:-8080},http://127.0.0.1:${WEB_PORT:-8080}
+    command: ["python", "../data_generation/bootstrap.py"]
   api:
     build:
       context: .
@@ -54,18 +49,24 @@ services:
     depends_on:
       seed: {condition: service_completed_successfully}
     environment: *api_environment
-    ports: ["127.0.0.1:8000:8000"]
+    ports: ["127.0.0.1:${API_PORT:-8001}:8000"]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4)"]
       interval: 5s
       timeout: 5s
+      start_period: 10s
       retries: 20
   web:
     build:
       context: ./web
     depends_on:
       api: {condition: service_healthy}
-    ports: ["127.0.0.1:8080:80"]
+    ports: ["127.0.0.1:${WEB_PORT:-8080}:80"]
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 volumes:
   postgres_data:
   mongo_data:

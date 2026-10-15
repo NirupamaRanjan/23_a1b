@@ -1,13 +1,15 @@
 // Test-only API contract fixtures. They are never imported by application source.
 export const setupApi = async (page) => {
+    await page.context().grantPermissions(['geolocation']);
+    await page.context().setGeolocation({ latitude: 17.445376, longitude: 78.346144, accuracy: 15 });
     const clinic = {
         id: 217,
         name: 'Lakeview Family Clinic',
-        latitude: 40.748817,
-        longitude: -73.98513,
+        latitude: 17.445376,
+        longitude: 78.346144,
         is_accepting_patients: true,
     };
-    const greenfield = { ...clinic, id: 301, name: 'Greenfield Medical' };
+    const greenfield = { ...clinic, id: 301, name: 'Greenfield Medical', latitude: 17.45, longitude: 78.35 };
     const patient = { id: 10482, name: 'Asha Rao', hsa_balance: '5000.00' };
     const other = { id: 10483, name: 'Rohan Mehta', hsa_balance: '2100.00' };
     const state = {
@@ -214,7 +216,7 @@ export const setupApi = async (page) => {
                               is_active: true,
                               location: {
                                   type: 'Point',
-                                  coordinates: [-73.98513, 40.748817],
+                                  coordinates: [78.346144, 17.445376],
                               },
                               created_at: '2026-10-12T22:40:00Z',
                               dist: { calculated: 480 },
@@ -241,12 +243,11 @@ export const setupApi = async (page) => {
                 ],
             });
         if (path === '/catalogs/specialties')
-            return send({
-                items: [
-                    { specialty: 'Cardiology', count: 5 },
-                    { specialty: 'General Practice', count: 5 },
-                ],
-            });
+            return send({ items: [{ specialty: 'General Practice', count: 40 }, { specialty: 'Cardiology', count: 2 }] });
+        if (path === '/catalogs' && url.searchParams.get('specialty') === 'Cardiology')
+            return send({ items: [{ id: 'cardiology-1', specialty: 'Cardiology',
+                availability_slots: [], medication_details: { name: 'Cardiology reference' } }],
+                total: 2, pages: 2, page: Number(url.searchParams.get('page') || 1), page_size: 1 });
         if (path === '/catalogs')
             return send({
                 ...result([

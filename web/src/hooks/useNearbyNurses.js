@@ -1,20 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { API } from '../service/api';
 import { useSession } from '../context/DataProvider';
+
 export default function useNearbyNurses(origin) {
     const { actorKey, session } = useSession();
-    const [state, setState] = useState({ data: null, loading: false, error: '' });
+    const key = origin ? `${actorKey}:${origin.latitude}:${origin.longitude}` : '';
+    const [state, setState] = useState({ key: '', data: null, loading: false, error: '' });
     const [attempt, setAttempt] = useState(0);
     useEffect(() => {
-        if (!origin || !session) {
-            setState({ data: null, loading: false, error: '' });
-            return;
-        }
-        let stopped = false,
-            timer,
-            inFlight = false;
+        if (!origin || !session) return;
+        let stopped = false, timer, inFlight = false;
         const controller = new AbortController();
-        setState({ data: null, loading: true, error: '' });
+        setState((previous) => previous.key === key
+            ? { ...previous, loading: !previous.data, error: '' }
+            : { key, data: null, loading: true, error: '' });
         const poll = async () => {
             clearTimeout(timer);
             if (stopped || inFlight) return;
@@ -22,23 +21,18 @@ export default function useNearbyNurses(origin) {
                 inFlight = true;
                 try {
                     const data = await API.nurses(origin, { signal: controller.signal });
-                    if (!stopped) setState({ data, loading: false, error: '' });
+                    if (!stopped) setState({ key, data, loading: false, error: '' });
                 } catch (error) {
-                    if (!stopped)
-                        setState((previous) => ({
-                            ...previous,
-                            loading: false,
-                            error: error.message,
-                        }));
+                    if (!stopped) setState((previous) => ({
+                        ...previous, loading: false, error: error.message,
+                    }));
                 } finally {
                     inFlight = false;
                 }
             }
             if (!stopped) timer = setTimeout(poll, 10000);
         };
-        const visible = () => {
-            if (document.visibilityState === 'visible') poll();
-        };
+        const visible = () => { if (document.visibilityState === 'visible') poll(); };
         poll();
         document.addEventListener('visibilitychange', visible);
         return () => {
@@ -47,6 +41,10 @@ export default function useNearbyNurses(origin) {
             clearTimeout(timer);
             document.removeEventListener('visibilitychange', visible);
         };
-    }, [origin?.latitude, origin?.longitude, actorKey, attempt, !!session]);
-    return { ...state, retry: () => setAttempt((value) => value + 1) };
+    }, [key, attempt, !!session]);
+    const retry = useCallback(() => setAttempt((value) => value + 1), []);
+    // Don't briefly expose results from a different actor or previous search origin.
+    const current = origin && session && state.key === key ? state
+        : { data: null, loading: !!origin && !!session, error: '' };
+    return { ...current, retry };
 }

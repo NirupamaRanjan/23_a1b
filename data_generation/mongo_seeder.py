@@ -1,18 +1,22 @@
 import random
 import os
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from mongo.setup import mongo_environment
 from datetime import datetime, timedelta, timezone
 from faker import Faker
 from pymongo import MongoClient
 
 try:  # run as a script: python data_generation/mongo_seeder.py
     import nurse_telemetry as telemetry
-except ImportError:  # imported by api/scripts/bootstrap.py
+except ImportError:  # imported by data_generation/bootstrap.py
     from data_generation import nurse_telemetry as telemetry
 
 # Optional: set CARECONNECT_SEED (e.g. 2026) to get the same names/data on every run.
 # Without it, every run generates new random data.
 SEED = os.getenv("CARECONNECT_SEED")
-fake = Faker("en_US")
+fake = Faker("en_IN")
 
 NURSE_COUNT = 500
 
@@ -27,15 +31,23 @@ def unique_person_names(count):
     return names
 
 
-def seed():
+def seed(reset=False):
     if SEED:
         random.seed(int(SEED))
         Faker.seed(int(SEED))
 
-    client = MongoClient(os.getenv("CARECONNECT_MONGO_URI", "mongodb://localhost:27017/"))
-    db = client[os.getenv("CARECONNECT_MONGO_DB", "careconnect")]
+    uri, database_name = mongo_environment()
+    client = MongoClient(uri)
+    db = client[database_name]
 
-    # Re-running the seeder replaces the data instead of appending to it.
+    if db.name != 'medical_db':
+        raise ValueError('Set CARECONNECT_MONGO_DB=medical_db before seeding.')
+    collections = ('Nurses', 'NursePings', 'PatientReviews', 'MedicalCatalogs')
+    if not reset and any(db[name].estimated_document_count() for name in collections):
+        client.close()
+        print('Existing MongoDB data preserved; no seeding performed.')
+        return
+    # --reset-data is an explicit replacement of demo data; normal setup never resets it.
     for name in ("Nurses", "NursePings", "PatientReviews", "MedicalCatalogs"):
         db[name].delete_many({})
 
@@ -51,7 +63,6 @@ def seed():
         nurses.append({"nurse_id": nurse_id, "name": name, "clinic_id": clinic_id,
                        "home": {"type": "Point", "coordinates": [home_lng, home_lat]}})
     db.Nurses.insert_many(nurses)
-    db.Nurses.create_index("nurse_id", unique=True)
     print(f"  {NURSE_COUNT} nurses around {len(clinics) or 'the default'} clinic locations")
 
     # 1. Seed 500,000 Geospatial Telemetry Pings: 1,000 per nurse, one every 6 seconds over the
@@ -95,7 +106,7 @@ def seed():
         })
     db.PatientReviews.insert_many(reviews)
 
-    # 3. Seed MedicalCatalogs (specialty, availability, medication details; see docs/mongo_schema_map.json)
+    # 3. Seed MedicalCatalogs (specialty, availability, medication details; see docs/api_endpoints.md)
     #    "physician" is an extra flexible field; the Reviews screen lists it under "Additional fields".
     print("Seeding MedicalCatalogs...")
     specialties = ["General Practice", "Cardiology", "Dermatology", "Pediatrics", "Orthopedics", "Neurology", "Psychiatry", "ENT"]
@@ -118,8 +129,16 @@ def seed():
                 "created_at": datetime.now(timezone.utc)
             })
     db.MedicalCatalogs.insert_many(catalogs)
+    client.close()
     print("MongoDB Data Generation Complete!")
 
 
 if __name__ == "__main__":
-    seed()
+    import argparse
+    from pathlib import Path
+    from dotenv import load_dotenv
+    repo = Path(__file__).resolve().parents[1]
+    load_dotenv(repo / '.env' if (repo / '.env').is_file() else repo / 'api/.env', override=False)
+    parser = argparse.ArgumentParser(description='Seed only an empty medical_db; never applies schema.')
+    parser.add_argument('--reset-data', action='store_true', help='Explicitly replace existing demo documents')
+    seed(reset=parser.parse_args().reset_data)

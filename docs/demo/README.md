@@ -1,4 +1,9 @@
-# Live seeded-data demonstration
+# Earlier live seeded-data demonstration
+
+This video predates the wider layouts and latest Windows/Docker setup changes. It is retained as
+historical integration evidence. Record/review a current walkthrough for the final submission and
+update the root README's demo link; this file does not claim a new recording was made.
+
 
 [Play the 20-second silent walkthrough](careconnect-live-demo.webm).
 

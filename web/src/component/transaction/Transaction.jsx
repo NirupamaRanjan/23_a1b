@@ -1,3 +1,4 @@
+import EmptyState from '../common/EmptyState';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Box, Button, Stack, TextField, Typography, alpha } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -45,7 +46,7 @@ const Transaction = () => {
         event.preventDefault();
         if (locked.current) return;
         // Report the specific problem rather than one combined message.
-        const problem = !session.patient
+        const problem = session.actor.role !== 'patient' || !session.patient
             ? 'Only patients can book. Switch to a patient in the header first.'
             : !displayClinic
               ? 'Choose a clinic in Browse or in the header before booking.'
@@ -92,6 +93,7 @@ const Transaction = () => {
     const disabled =
         busy ||
         !!result ||
+        session.actor.role !== 'patient' ||
         !session.patient ||
         !displayClinic?.is_accepting_patients ||
         !!active ||
@@ -113,6 +115,11 @@ const Transaction = () => {
             >
                 <Panel component='form' onSubmit={submit}>
                     <Title>Booking details</Title>
+                    {session.actor.role !== 'patient' && (
+                        <Alert severity='info' sx={{ mb: 2 }}>
+                            Only patients can book. Switch to a patient in the header first.
+                        </Alert>
+                    )}
                     <Stack sx={{ gap: 3 }}>
                         <TextField
                             label='Patient'
@@ -290,9 +297,7 @@ const Transaction = () => {
                         </Panel>
                     ) : (
                         <Panel>
-                            <Typography color='text.secondary'>
-                                Your booking outcome and the exact new audit entry will appear here.
-                            </Typography>
+                            <EmptyState title='Your next step in care' message='Your booking outcome and the exact new audit entry will appear here after you book.' />
                         </Panel>
                     )}
                 </Box>

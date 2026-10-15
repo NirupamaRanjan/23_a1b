@@ -168,7 +168,7 @@ test('A new nurse ping appears after polling without navigation', async ({ page 
         {
             nurse_id: 117,
             is_active: true,
-            location: { type: 'Point', coordinates: [-73.98513, 40.748817] },
+            location: { type: 'Point', coordinates: [78.346144, 17.445376] },
             created_at: '2026-10-12T22:40:30Z',
             dist: { calculated: 200 },
         },
@@ -183,7 +183,7 @@ test('Map lists a seeded nurse by name when the ping carries one', async ({ page
             nurse_id: 42,
             nurse_name: 'Brian Osborne',
             is_active: true,
-            location: { type: 'Point', coordinates: [-73.98513, 40.748817] },
+            location: { type: 'Point', coordinates: [78.346144, 17.445376] },
             created_at: '2026-10-12T22:40:30Z',
             dist: { calculated: 150 },
         },
@@ -214,3 +214,114 @@ test('The ranking date picker sits inside the Clinic ranking section', async ({ 
     expect(picker.y).toBeLessThan(table.y);
     await expect(page.getByText('Ranking date', { exact: true })).toHaveCount(0);
 });
+
+// Tile bytes are isolated in these behavior tests; they never depend on an external server.
+const localTiles = async (page) => {
+    await page.route('https://tile.openstreetmap.org/**', (route) => route.fulfill({
+        contentType: 'image/gif',
+        body: Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64'),
+    }));
+};
+
+test('Map keeps the same Leaflet instance on origin changes and clinic switches', async ({ page }) => {
+    const state = await setupApi(page);
+    await localTiles(page);
+    await page.goto('/map');
+    await expect(page.getByText('1. Nurse 42')).toBeVisible();
+    const map = await page.locator('.leaflet-container').elementHandle();
+    await page.getByLabel('Origin latitude').fill('17.446');
+    await page.getByRole('button', { name: 'Apply origin', exact: true }).click();
+    await expect(page.getByLabel('Origin latitude')).toHaveValue('17.446');
+    expect(await map.evaluate((element) => element.isConnected)).toBe(true);
+    await page.getByRole('combobox').click();
+    await page.getByRole('option', { name: 'Greenfield Medical (301)', exact: true }).click();
+    await expect(page.getByLabel('Origin latitude')).toHaveValue('17.446');
+    await page.getByRole('button', { name: 'Use selected clinic', exact: true }).click();
+    await expect(page.getByLabel('Origin latitude')).toHaveValue('17.45');
+    await expect(page.getByLabel('Origin longitude')).toHaveValue('78.35');
+    expect(await map.evaluate((element) => element.isConnected)).toBe(true);
+    await expect.poll(() => state.calls.filter((call) => call.path === '/nurses/nearby').at(-1)?.query.latitude).toBe('17.45');
+});
+
+test('Selecting a nurse marker does not move the search origin', async ({ page }) => {
+    const state = await setupApi(page);
+    state.nurseRows = [{ nurse_id: 42, is_active: true,
+        location: { type: 'Point', coordinates: [78.347, 17.445376] },
+        created_at: new Date().toISOString(), dist: { calculated: 430 } }];
+    await localTiles(page);
+    await page.goto('/map');
+    await expect(page.getByText('1. Nurse 42')).toBeVisible();
+    const before = await page.getByLabel('Origin longitude').inputValue();
+    await page.locator('path.leaflet-interactive').nth(2).click();
+    await expect(page.getByLabel('Origin longitude')).toHaveValue(before);
+    await expect(page.getByRole('button', { name: 'Select Nurse 42', exact: true })).toHaveClass(/Mui-selected/);
+});
+
+test('Map refresh failure retains its previous results', async ({ page }) => {
+    const state = await setupApi(page);
+    await localTiles(page);
+    await page.goto('/map');
+    await expect(page.getByText('1. Nurse 42')).toBeVisible();
+    state.nursesFailure = true;
+    await page.getByRole('button', { name: 'Refresh now', exact: true }).click();
+    await expect(page.getByText(/Live update failed/)).toBeVisible();
+    await expect(page.getByText('1. Nurse 42')).toBeVisible();
+});
+
+test('Staff with a retained audit patient cannot submit a booking', async ({ page }) => {
+    const state = await setupApi(page);
+    await page.goto('/transaction');
+    await page.getByRole('button', { name: 'Choose demo actor' }).click();
+    await page.getByRole('button', { name: 'Clinic staff: Lakeview Family Clinic' }).click();
+    await expect(page.getByText('Only patients can book. Switch to a patient in the header first.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Book appointment', exact: true })).toBeDisabled();
+    expect(state.calls.filter((call) => call.path === '/appointments' && call.method === 'POST')).toHaveLength(0);
+});
+
+test('Changing catalog specialty resets pagination before fetching', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    const state = await setupApi(page);
+    await page.goto('/reviews');
+    await expect(page.getByText('Paracetamol', { exact: true })).toBeVisible();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await expect(page.getByText('Catalog entry 2 of 40')).toBeVisible();
+    await page.getByRole('button', { name: 'Cardiology', exact: true }).click();
+    await expect(page.getByText('Cardiology reference', { exact: true })).toBeVisible();
+    await expect(page.getByText('Catalog entry 1 of 2')).toBeVisible();
+    expect(state.calls.filter((call) => call.path === '/catalogs' && call.query.specialty === 'Cardiology')
+        .every((call) => call.query.page === '1')).toBe(true);
+});
+
+
+for (const width of [1440, 1920, 2560]) {
+    test(`All six screens use the available desktop workspace at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 1080 });
+        await setupApi(page);
+        await localTiles(page);
+        for (const route of ['browse','transaction','audit','analytics','map','reviews']) {
+            await page.goto('/' + route);
+            await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+            const area = await page.getByRole('main').evaluate((element) => {
+                const style = getComputedStyle(element);
+                return element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+            });
+            expect(area, `${route}: usable desktop content width`).toBeGreaterThanOrEqual(width - 50);
+            const heading = await page.getByRole('heading', { level: 1 }).boundingBox();
+            expect(heading.x, `${route}: heading left gutter`).toBeCloseTo(24, 0);
+            const panels = page.getByRole('main').locator('.MuiPaper-root');
+            const bounds = await panels.evaluateAll((elements) => elements.map((element) => {
+                const rect = element.getBoundingClientRect();
+                return { left: rect.left, right: rect.right };
+            }));
+            expect(Math.min(...bounds.map((box) => box.left)), `${route}: panel left gutter`).toBeCloseTo(24, 0);
+            expect(Math.max(...bounds.map((box) => box.right)), `${route}: panel right gutter`).toBeCloseTo(width - 24, 0);
+            await page.evaluate(() => document.fonts.ready);
+            expect(await page.evaluate(() => [...document.fonts].some((font) => font.family === 'Inter' && font.status === 'loaded'))).toBe(true);
+            expect(await page.getByRole('heading', { level: 1 }).evaluate((element) => getComputedStyle(element).fontFamily)).toContain('Inter');
+            expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+            if (process.env.CARECONNECT_QA_IMAGES && width === 1920) {
+                await page.screenshot({ path: `${process.env.CARECONNECT_QA_IMAGES}/${route}.png`, fullPage: true });
+            }
+        }
+    });
+}
